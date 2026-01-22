@@ -123,10 +123,11 @@
       </div>
 
       <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-        <a href="#" class="hidden sm:flex items-center gap-2 bg-white text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm border border-gray-200 hover:border-indigo-300">
-          <i class="fas fa-download"></i>
-          <span>Scarica App</span>
-        </a>
+        <!-- PWA Install (Web App) -->
+        <button id="installBtn" class="hidden sm:flex items-center gap-2 bg-white text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm border border-gray-200 hover:border-indigo-300" type="button">
+          <i class="fas fa-plus-square"></i>
+          <span>Aggiungi alla Home</span>
+        </button>
       </div>
     </div>
 
@@ -163,18 +164,18 @@
         <div class="bg-white rounded-2xl p-5 text-gray-800 shadow-lg border border-gray-100 relative overflow-hidden group">
           <div class="flex items-center gap-2 mb-3">
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span class="text-xs font-bold text-gray-500 uppercase">Stato Crawler</span>
+            <span class="text-xs font-bold text-gray-500 uppercase">Stato Scanner</span>
           </div>
           <p class="font-bold text-lg mb-1">Online</p>
-          <p class="text-xs text-gray-500 mb-4">Ricerca offerte con grounding web (Gemini).</p>
+          <p class="text-xs text-gray-500 mb-4">Monitoraggio attivo su store e sorgenti pubbliche. Aggiornamento continuo.</p>
 
           <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
             <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 100%"></div>
           </div>
           <div class="flex justify-between text-[10px] text-gray-400 font-mono">
-            <span>WEB: OK</span>
-            <span>LLM: OK</span>
-            <span>API: OK</span>
+            <span>AMZ: OK</span>
+            <span>EBY: OK</span>
+            <span>UNI: OK</span>
           </div>
         </div>
       </div>
@@ -188,7 +189,7 @@
           <h1 class="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2" id="pageTitle">
             Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>
           </h1>
-          <p class="text-gray-500 text-sm mt-1">Ricerca live: /api/search (Vercel) → Gemini.</p>
+          <p class="text-gray-500 text-sm mt-1">Confrontiamo offerte disponibili su store e canali pubblici per farti risparmiare.</p>
         </div>
         <div class="hidden sm:flex items-center gap-2 text-sm">
           <span class="text-gray-400 text-xs">Ordina per:</span>
@@ -208,15 +209,15 @@
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Nessun risultato trovato</h3>
         <p class="text-gray-500 max-w-md mx-auto mb-6">Non abbiamo trovato offerte coerenti per questa ricerca.</p>
-        <button onclick="resetFilters()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition">Torna alla Home</button>
+        <button onclick="resetFilters()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition" type="button">Torna alla Home</button>
       </div>
 
       <div id="sourcesBox" class="hidden mt-10 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between gap-4 mb-3">
           <h2 class="font-extrabold text-gray-900 flex items-center gap-2">
-            <i class="fas fa-link text-indigo-600"></i> Fonti (grounding)
+            <i class="fas fa-link text-indigo-600"></i> Sorgenti consultate
           </h2>
-          <span class="text-[11px] text-gray-500 font-mono">Trasparenza prima di tutto.</span>
+          <span class="text-[11px] text-gray-500 font-mono">Link utili per verificare prezzi e disponibilità.</span>
         </div>
         <ul id="sourcesList" class="space-y-2 text-sm"></ul>
       </div>
@@ -232,7 +233,7 @@
         <span class="text-[10px] font-bold">Home</span>
       </a>
       <div class="relative -top-6">
-        <button class="w-14 h-14 bg-indigo-600 rounded-2xl text-white shadow-xl flex items-center justify-center text-xl hover:shadow-indigo-500/40 transition transform active:scale-95 group border border-indigo-500" onclick="document.getElementById('searchInput').focus()">
+        <button class="w-14 h-14 bg-indigo-600 rounded-2xl text-white shadow-xl flex items-center justify-center text-xl hover:shadow-indigo-500/40 transition transform active:scale-95 group border border-indigo-500" onclick="document.getElementById('searchInput').focus()" type="button">
           <i class="fas fa-search group-hover:scale-110 transition-transform"></i>
         </button>
       </div>
@@ -244,6 +245,7 @@
   </div>
 
   <script>
+    // --- DATA ---
     const categories = [
       { id: 'all', name: 'Tutte', icon: 'fas fa-th-large' },
       { id: 'tech', name: 'Tech', icon: 'fas fa-mobile-alt' },
@@ -253,6 +255,7 @@
       { id: 'coupons', name: 'Coupon', icon: 'fas fa-ticket-alt' }
     ];
 
+    // Nota: i dati demo vengono sostituiti automaticamente dalla Home live (API)
     const staticDeals = [
       { id: 1, title: 'Apple AirPods Pro (2ª gen) USB-C', price: 239.00, originalPrice: 279.00, discount: 15, store: 'Amazon', image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80', category: 'tech', hot: true, time: 'Demo', url: '#' },
       { id: 2, title: 'PlayStation 5 Slim Standard', price: 449.99, originalPrice: 549.99, discount: 18, store: 'MediaWorld', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80', category: 'gaming', hot: true, time: 'Demo', url: '#' },
@@ -276,6 +279,26 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+
+    function setScanningUI(isOn) {
+      const terminal = $('systemTerminal');
+      const logs = $('systemLogs');
+      const searchIndicator = $('searchIndicator');
+      const searchClear = $('searchClear');
+
+      if (isOn) {
+        document.body.classList.add('is-scanning');
+        terminal.classList.add('active');
+        logs.innerHTML = '';
+        searchIndicator.classList.remove('hidden');
+        searchClear.classList.add('hidden');
+      } else {
+        terminal.classList.remove('active');
+        searchIndicator.classList.add('hidden');
+        searchClear.classList.remove('hidden');
+        document.body.classList.remove('is-scanning');
+      }
     }
 
     function addLog(message, type = 'info') {
@@ -302,50 +325,6 @@
       return d;
     }
 
-    async function liveSearch(query) {
-      const terminal = $('systemTerminal');
-      const logs = $('systemLogs');
-      const searchIndicator = $('searchIndicator');
-      const searchClear = $('searchClear');
-
-      document.body.classList.add('is-scanning');
-      terminal.classList.add('active');
-      logs.innerHTML = '';
-      searchIndicator.classList.remove('hidden');
-      searchClear.classList.add('hidden');
-
-      addLog(`Avvio ricerca globale per: "${query}"...`, 'process');
-      addLog(`Interrogazione /api/search...`, 'info');
-
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          addLog(`Errore API (${res.status}): ${data?.error || 'unknown'}`, 'warn');
-          return { deals: [], sources: [] };
-        }
-
-        addLog(`Ricevuti ${Array.isArray(data.deals) ? data.deals.length : 0} risultati.`, 'success');
-
-        currentCategory = 'all';
-        renderCategories();
-
-        return {
-          deals: Array.isArray(data.deals) ? data.deals : [],
-          sources: Array.isArray(data.sources) ? data.sources : []
-        };
-      } catch (e) {
-        addLog(`Errore di rete: ${e?.message || e}`, 'warn');
-        return { deals: [], sources: [] };
-      } finally {
-        terminal.classList.remove('active');
-        searchIndicator.classList.add('hidden');
-        searchClear.classList.remove('hidden');
-        document.body.classList.remove('is-scanning');
-      }
-    }
-
     function renderCategories() {
       const desktopNav = $('desktopCategories');
       const mobileNav = $('mobileCategories');
@@ -359,14 +338,14 @@
           : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600';
 
         desktopNav.innerHTML += `
-          <button onclick="filterCategory('${cat.id}')" class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}" aria-pressed="${isActive}">
+          <button onclick="filterCategory('${cat.id}')" class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}" aria-pressed="${isActive}" type="button">
             <div class="w-6 text-center"><i class="${cat.icon}"></i></div>
             <span class="text-sm">${cat.name}</span>
           </button>
         `;
 
         mobileNav.innerHTML += `
-          <button onclick="filterCategory('${cat.id}')" class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}" aria-pressed="${isActive}">
+          <button onclick="filterCategory('${cat.id}')" class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}" aria-pressed="${isActive}" type="button">
             ${cat.name}
           </button>
         `;
@@ -458,7 +437,7 @@
                 </div>
               ` : `
                 <div class="mt-auto pt-3">
-                  <button onclick="copyCoupon('${String(deal.code || '').replace(/'/g, "\\'")}', this)" class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2" aria-label="Copia coupon">
+                  <button onclick="copyCoupon('${String(deal.code || '').replace(/'/g, "\\'")}', this)" class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2" aria-label="Copia coupon" type="button">
                     ${escapeHtml(deal.code || 'COPIA CODICE')} <i class="far fa-copy"></i>
                   </button>
                 </div>
@@ -469,6 +448,66 @@
       });
     }
 
+    // --- API CALLS ---
+    async function liveSearch(query) {
+      setScanningUI(true);
+      addLog(`Avvio scansione prezzi per: "${query}"...`, 'process');
+      addLog('Connessione ai canali monitorati...', 'info');
+
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          addLog(`Errore servizio (${res.status}): ${data?.error || 'unknown'}`, 'warn');
+          return { deals: [], sources: [] };
+        }
+
+        addLog('Dati ricevuti. Normalizzazione e ranking...', 'process');
+        addLog(`Risultati: ${Array.isArray(data.deals) ? data.deals.length : 0}`, 'success');
+
+        return {
+          deals: Array.isArray(data.deals) ? data.deals : [],
+          sources: Array.isArray(data.sources) ? data.sources : []
+        };
+      } catch (e) {
+        addLog(`Errore di rete: ${e?.message || e}`, 'warn');
+        return { deals: [], sources: [] };
+      } finally {
+        setScanningUI(false);
+      }
+    }
+
+    async function loadHome() {
+      setScanningUI(true);
+      addLog('Caricamento Home: migliori offerte per categoria...', 'process');
+      try {
+        const res = await fetch('/api/home');
+        const data = await res.json();
+
+        if (!res.ok) {
+          addLog(`Home non disponibile (${res.status}). Uso feed demo.`, 'warn');
+          return;
+        }
+
+        if (Array.isArray(data.deals) && data.deals.length) {
+          lastResults = data.deals;
+          currentCategory = 'all';
+          renderCategories();
+          renderDeals(data.deals);
+          renderSources(Array.isArray(data.sources) ? data.sources : []);
+          addLog(`Home aggiornata (${data.deals.length} offerte).`, 'success');
+        } else {
+          addLog('Home: nessuna offerta disponibile.', 'warn');
+        }
+      } catch (e) {
+        addLog(`Home: errore rete (${e?.message || e}).`, 'warn');
+      } finally {
+        setScanningUI(false);
+      }
+    }
+
+    // --- EVENTS / UI ---
     const searchInput = $('searchInput');
     const pageTitle = $('pageTitle');
 
@@ -478,6 +517,8 @@
         if (term.length > 1) {
           liveSearch(term).then(({deals, sources}) => {
             lastResults = deals;
+            currentCategory = 'all';
+            renderCategories();
             renderDeals(deals);
             renderSources(sources);
             pageTitle.innerHTML = `Risultati per: <span class="text-indigo-600">"${escapeHtml(term)}"</span>`;
@@ -486,7 +527,7 @@
       }
     });
 
-    $('searchClear').addEventListener('keydown', (e) => {
+    $('searchClear')?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') resetFilters();
     });
 
@@ -497,8 +538,8 @@
       $('systemTerminal').classList.remove('active');
       document.body.classList.remove('is-scanning');
 
-      $('searchIndicator').classList.add('hidden');
-      $('searchClear').classList.add('hidden');
+      $('searchIndicator')?.classList.add('hidden');
+      $('searchClear')?.classList.add('hidden');
 
       currentCategory = 'all';
       lastResults = [...staticDeals];
@@ -507,7 +548,7 @@
       renderSources([]);
 
       pageTitle.innerHTML = defaultTitleHTML();
-      $('noResults').classList.add('hidden');
+      $('noResults')?.classList.add('hidden');
     }
 
     window.filterCategory = function(catId) {
@@ -532,7 +573,7 @@
         const originalHtml = btn.innerHTML;
         const originalClass = btn.className;
         btn.innerHTML = `<i class="fas fa-check"></i> COPIATO`;
-        btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-sm transition shadow-lg";
+        btn.className = 'w-full bg-green-500 text-white font-bold py-2 rounded-lg text-sm transition shadow-lg';
         setTimeout(() => { btn.innerHTML = originalHtml; btn.className = originalClass; }, 2000);
       };
 
@@ -556,8 +597,40 @@
       }
     }
 
+    // --- PWA INSTALL (Web App) ---
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = $('installBtn');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    $('installBtn')?.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      $('installBtn')?.classList.add('hidden');
+    });
+
+    // --- INIT ---
     renderCategories();
     renderDeals(staticDeals);
+    loadHome();
+
+    // --- BASIC RUNTIME CHECKS (dev-only console) ---
+    // Serve solo a evitare regressioni: non impatta UI.
+    (function runtimeChecks(){
+      try {
+        if (typeof liveSearch !== 'function') throw new Error('liveSearch missing');
+        if (typeof loadHome !== 'function') throw new Error('loadHome missing');
+        if (!Array.isArray(categories) || categories.length < 2) throw new Error('categories invalid');
+        if (!Array.isArray(staticDeals) || staticDeals.length < 1) throw new Error('staticDeals invalid');
+      } catch (err) {
+        console.error('[Offerte.app] Runtime checks failed:', err);
+      }
+    })();
   </script>
 </body>
 </html>
