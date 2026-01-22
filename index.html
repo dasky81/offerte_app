@@ -325,6 +325,70 @@
       return d;
     }
 
+    // Mix (interleave) deals by category to avoid a "single-category wall" in Home.
+    // Strategy: take up to perCat from each category (excluding 'all'), round-robin, then fill remaining.
+    function mixDealsByCategory(deals, opts = {}) {
+      const maxTotal = Number.isFinite(opts.maxTotal) ? opts.maxTotal : 18;
+      const perCat = Number.isFinite(opts.perCat) ? opts.perCat : 4;
+
+      if (!Array.isArray(deals) || deals.length === 0) return [];
+
+      // Separate coupons to sprinkle (optional)
+      const coupons = deals.filter(d => d && (d.category === 'coupons' || d.code));
+      const normal = deals.filter(d => d && !(d.category === 'coupons' || d.code));
+
+      const catIds = categories.map(c => c.id).filter(id => id !== 'all');
+      const buckets = new Map(catIds.map(id => [id, []]));
+      const other = [];
+
+      for (const d of normal) {
+        const cid = d.category;
+        if (cid && buckets.has(cid)) buckets.get(cid).push(d);
+        else other.push(d);
+      }
+
+      // cap each bucket
+      for (const [cid, arr] of buckets.entries()) {
+        buckets.set(cid, arr.slice(0, perCat));
+      }
+
+      const mixed = [];
+      let added = true;
+      while (added && mixed.length < maxTotal) {
+        added = false;
+        for (const cid of catIds) {
+          const arr = buckets.get(cid);
+          if (arr && arr.length && mixed.length < maxTotal) {
+            mixed.push(arr.shift());
+            added = true;
+          }
+        }
+      }
+
+      // Sprinkle 1 coupon every ~6 cards (if present)
+      if (coupons.length) {
+        const out = [];
+        let cIdx = 0;
+        for (let i = 0; i < mixed.length && out.length < maxTotal; i++) {
+          out.push(mixed[i]);
+          if ((i + 1) % 6 === 0 && cIdx < coupons.length && out.length < maxTotal) {
+            out.push(coupons[cIdx++]);
+          }
+        }
+        // add remaining coupons if space
+        while (cIdx < coupons.length && out.length < maxTotal) out.push(coupons[cIdx++]);
+        return out.slice(0, maxTotal);
+      }
+
+      // Fill remaining slots with "other" (unknown categories)
+      for (const d of other) {
+        if (mixed.length >= maxTotal) break;
+        mixed.push(d);
+      }
+
+      return mixed.slice(0, maxTotal);
+    }
+
     function renderCategories() {
       const desktopNav = $('desktopCategories');
       const mobileNav = $('mobileCategories');
@@ -480,7 +544,7 @@
 
     async function loadHome() {
       setScanningUI(true);
-      addLog('Caricamento Home: migliori offerte per categoria...', 'process');
+      addLog('Caricamento Home: mix di offerte in evidenza...', 'process');
       try {
         const res = await fetch('/api/home');
         const data = await res.json();
@@ -490,13 +554,31 @@
           return;
         }
 
-        if (Array.isArray(data.deals) && data.deals.length) {
-          lastResults = data.deals;
+        // Supporta due formati:
+        // 1) { deals: [...] , sources: [...] }
+        // 2) { perCategory: { tech:[...], home:[...], ... }, sources:[...] }
+        let incoming = [];
+        if (Array.isArray(data.deals)) incoming = data.deals;
+        else if (data.perCategory && typeof data.perCategory === 'object') {
+          const catIds = categories.map(c => c.id).filter(id => id !== 'all');
+          for (const cid of catIds) {
+            const arr = data.perCategory[cid];
+            if (Array.isArray(arr)) incoming.push(...arr.map(x => ({...x, category: x.category || cid})));
+          }
+          // eventuali extra
+          if (Array.isArray(data.perCategory.other)) incoming.push(...data.perCategory.other);
+        }
+
+        if (incoming.length) {
+          // Mix client-side per garantire varietà.
+          const mixed = mixDealsByCategory(incoming, { maxTotal: 18, perCat: 4 });
+
+          lastResults = mixed;
           currentCategory = 'all';
           renderCategories();
-          renderDeals(data.deals);
+          renderDeals(mixed);
           renderSources(Array.isArray(data.sources) ? data.sources : []);
-          addLog(`Home aggiornata (${data.deals.length} offerte).`, 'success');
+          addLog(`Home aggiornata (${mixed.length} offerte).`, 'success');
         } else {
           addLog('Home: nessuna offerta disponibile.', 'warn');
         }
