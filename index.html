@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme-color" content="#4f46e5">
 
-  <!-- SEO Meta Tags -->
   <title>Offerte.app - Il Motore di Ricerca del Risparmio</title>
   <meta name="description" content="Confronta prezzi in tempo reale su Amazon, eBay e centinaia di negozi online. Trova sempre il miglior prezzo con Offerte.app.">
   <meta name="robots" content="index, follow">
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS (CDN per prototipo) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Font Awesome -->
@@ -35,17 +34,15 @@
       overflow: hidden;
     }
 
-    /* --- ANIMAZIONI --- */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
     .deal-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
     .deal-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
-    /* Terminal Styles */
+    /* Terminal */
     .system-terminal {
       transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
       max-height: 0;
@@ -57,7 +54,7 @@
       opacity: 1;
     }
 
-    /* Scanning effect overlay on images */
+    /* Scan overlay */
     .scan-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -65,16 +62,13 @@
       transform: translateY(-100%);
       animation: scan-vertical 2s linear infinite;
       pointer-events: none;
-      display: none; /* default off */
+      display: none;
     }
     .group:hover .scan-overlay { display: block; }
-
     @keyframes scan-vertical {
       0% { transform: translateY(-100%); }
       100% { transform: translateY(100%); }
     }
-
-    /* IMPORTANT: show scanning also on mobile / during search */
     body.is-scanning .scan-overlay { display: block; }
 
     .bottom-nav-padding { padding-bottom: 80px; }
@@ -83,7 +77,7 @@
 
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen selection:bg-indigo-100 selection:text-indigo-800">
 
-  <!-- Top App Bar (Sticky) -->
+  <!-- Top App Bar -->
   <header class="fixed w-full z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 top-0 transition-all duration-300">
     <div class="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between gap-4">
       <!-- Logo -->
@@ -97,7 +91,7 @@
         </div>
       </a>
 
-      <!-- Search Bar -->
+      <!-- Search -->
       <div class="flex-1 max-w-2xl relative group">
         <div class="relative transition-transform duration-300 focus-within:scale-[1.01]">
           <label for="searchInput" class="sr-only">Cerca offerte</label>
@@ -112,7 +106,6 @@
             autocomplete="off"
           >
 
-          <!-- Search Indicator -->
           <div id="searchIndicator" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
             <i class="fas fa-circle-notch fa-spin text-indigo-500"></i>
           </div>
@@ -129,7 +122,6 @@
         </div>
       </div>
 
-      <!-- User Actions -->
       <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
         <a href="#" class="hidden sm:flex items-center gap-2 bg-white text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm border border-gray-200 hover:border-indigo-300">
           <i class="fas fa-download"></i>
@@ -138,99 +130,97 @@
       </div>
     </div>
 
-    <!-- SEARCH PROCESSING TERMINAL -->
+    <!-- Terminal -->
     <div id="systemTerminal" class="system-terminal bg-gray-900 text-green-400 font-mono text-xs sm:text-sm border-t border-b border-gray-800 shadow-inner">
       <div class="container mx-auto px-4 py-3">
         <div class="flex items-center gap-2 mb-2 text-gray-500 border-b border-gray-800 pb-1">
           <i class="fas fa-server"></i> PRICE_SCANNER_V4.exe
           <span class="ml-auto text-[10px] bg-indigo-900 text-indigo-200 px-2 rounded">NETWORK ACTIVE</span>
         </div>
-        <div id="systemLogs" class="space-y-1 h-24 overflow-y-auto" aria-live="polite">
-          <!-- Logs -->
-        </div>
+        <div id="systemLogs" class="space-y-1 h-24 overflow-y-auto" aria-live="polite"></div>
       </div>
     </div>
 
     <!-- Mobile Categories -->
     <div class="lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur">
-      <div class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide" id="mobileCategories">
-        <!-- Injected -->
-      </div>
+      <div class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide" id="mobileCategories"></div>
     </div>
   </header>
 
   <!-- Main Layout -->
   <div class="flex flex-1 pt-[120px] lg:pt-[90px] bottom-nav-padding container mx-auto px-4 lg:px-8 gap-8">
 
-    <!-- Sidebar Filters (Desktop Only) -->
+    <!-- Sidebar Filters -->
     <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-90px)] overflow-y-auto pb-10 pr-4 scrollbar-hide">
       <div class="space-y-8">
-        <!-- Categories -->
         <div>
           <h3 class="font-bold text-gray-900 mb-4 px-2 flex items-center gap-2">
             <i class="fas fa-layer-group text-indigo-500"></i> Categorie
           </h3>
-          <nav class="space-y-1" id="desktopCategories">
-            <!-- Injected -->
-          </nav>
+          <nav class="space-y-1" id="desktopCategories"></nav>
         </div>
 
-        <!-- System Status Box -->
         <div class="bg-white rounded-2xl p-5 text-gray-800 shadow-lg border border-gray-100 relative overflow-hidden group">
           <div class="flex items-center gap-2 mb-3">
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
             <span class="text-xs font-bold text-gray-500 uppercase">Stato Crawler</span>
           </div>
           <p class="font-bold text-lg mb-1">Online</p>
-          <p class="text-xs text-gray-500 mb-4">Monitoraggio attivo su 50+ store italiani ed esteri.</p>
+          <p class="text-xs text-gray-500 mb-4">Ricerca offerte con grounding web (Gemini).</p>
 
           <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
             <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 100%"></div>
           </div>
           <div class="flex justify-between text-[10px] text-gray-400 font-mono">
-            <span>AMZ: OK</span>
-            <span>EBY: OK</span>
-            <span>UNI: OK</span>
+            <span>WEB: OK</span>
+            <span>LLM: OK</span>
+            <span>API: OK</span>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-1 lg:ml-72 min-w-0 pb-12">
 
-      <!-- Quick Stats / Breadcrumb -->
       <div class="flex items-end justify-between mb-8">
         <div>
           <h1 class="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2" id="pageTitle">
             Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>
           </h1>
-          <p class="text-gray-500 text-sm mt-1">Confrontiamo migliaia di prezzi in tempo reale per farti risparmiare.</p>
+          <p class="text-gray-500 text-sm mt-1">Ricerca live: /api/search (Vercel) → Gemini.</p>
         </div>
         <div class="hidden sm:flex items-center gap-2 text-sm">
           <span class="text-gray-400 text-xs">Ordina per:</span>
-          <select class="bg-white border-none text-gray-900 font-bold focus:ring-0 cursor-pointer" aria-label="Ordina risultati">
-            <option>Rilevanza</option>
-            <option>Prezzo più basso</option>
-            <option>Sconto maggiore %</option>
+          <select id="sortSelect" class="bg-white border-none text-gray-900 font-bold focus:ring-0 cursor-pointer" aria-label="Ordina risultati">
+            <option value="relevance">Rilevanza</option>
+            <option value="price">Prezzo più basso</option>
+            <option value="discount">Sconto maggiore %</option>
           </select>
         </div>
       </div>
 
-      <!-- Offers Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="dealsGrid">
-        <!-- Deals -->
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="dealsGrid"></div>
 
-      <!-- Empty State -->
       <div id="noResults" class="hidden text-center py-20 animate-fade-in-up">
         <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6 relative">
           <i class="fas fa-search text-4xl text-gray-300"></i>
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Nessun risultato trovato</h3>
-        <p class="text-gray-500 max-w-md mx-auto mb-6">Non abbiamo trovato offerte per questa ricerca nei negozi monitorati.</p>
+        <p class="text-gray-500 max-w-md mx-auto mb-6">Non abbiamo trovato offerte coerenti per questa ricerca.</p>
         <button onclick="resetFilters()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition">Torna alla Home</button>
       </div>
+
+      <div id="sourcesBox" class="hidden mt-10 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between gap-4 mb-3">
+          <h2 class="font-extrabold text-gray-900 flex items-center gap-2">
+            <i class="fas fa-link text-indigo-600"></i> Fonti (grounding)
+          </h2>
+          <span class="text-[11px] text-gray-500 font-mono">Trasparenza prima di tutto.</span>
+        </div>
+        <ul id="sourcesList" class="space-y-2 text-sm"></ul>
+      </div>
+
     </main>
   </div>
 
@@ -253,9 +243,7 @@
     </div>
   </div>
 
-  <!-- JavaScript Data & Logic -->
   <script>
-    // --- DATA LAYER ---
     const categories = [
       { id: 'all', name: 'Tutte', icon: 'fas fa-th-large' },
       { id: 'tech', name: 'Tech', icon: 'fas fa-mobile-alt' },
@@ -265,70 +253,29 @@
       { id: 'coupons', name: 'Coupon', icon: 'fas fa-ticket-alt' }
     ];
 
-    // Featured Deals (static mock)
     const staticDeals = [
-      {
-        id: 1,
-        title: 'Apple AirPods Pro (2ª gen) USB-C',
-        price: 239.00,
-        originalPrice: 279.00,
-        discount: 15,
-        store: 'Amazon',
-        image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80',
-        category: 'tech',
-        hot: true,
-        time: '2 min fa',
-        url: '#'
-      },
-      {
-        id: 2,
-        title: 'PlayStation 5 Slim Standard',
-        price: 449.99,
-        originalPrice: 549.99,
-        discount: 18,
-        store: 'MediaWorld',
-        image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80',
-        category: 'gaming',
-        hot: true,
-        time: '15 min fa',
-        url: '#'
-      },
-      {
-        id: 4,
-        title: 'Codice Sconto Nike Ufficiale',
-        price: 0,
-        originalPrice: 0,
-        discount: 25,
-        store: 'Nike',
-        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
-        category: 'coupons',
-        code: 'NIKE25',
-        hot: true,
-        time: '3 ore fa',
-        url: '#'
-      },
-      {
-        id: 7,
-        title: 'MacBook Air M2 13\" Galassia',
-        price: 999.00,
-        originalPrice: 1349.00,
-        discount: 26,
-        store: 'Amazon',
-        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80',
-        category: 'tech',
-        hot: true,
-        time: '6 ore fa',
-        url: '#'
-      }
+      { id: 1, title: 'Apple AirPods Pro (2ª gen) USB-C', price: 239.00, originalPrice: 279.00, discount: 15, store: 'Amazon', image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80', category: 'tech', hot: true, time: 'Demo', url: '#' },
+      { id: 2, title: 'PlayStation 5 Slim Standard', price: 449.99, originalPrice: 549.99, discount: 18, store: 'MediaWorld', image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80', category: 'gaming', hot: true, time: 'Demo', url: '#' },
+      { id: 4, title: 'Codice Sconto Nike Ufficiale', price: 0, originalPrice: 0, discount: 25, store: 'Nike', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80', category: 'coupons', code: 'NIKE25', hot: true, time: 'Demo', url: '#' },
+      { id: 7, title: 'MacBook Air M2 13" Galassia', price: 999.00, originalPrice: 1349.00, discount: 26, store: 'Amazon', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80', category: 'tech', hot: true, time: 'Demo', url: '#' }
     ];
 
     let currentCategory = 'all';
+    let lastResults = [...staticDeals];
 
-    // --- HELPERS ---
     const $ = (id) => document.getElementById(id);
 
     function defaultTitleHTML() {
       return 'Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
 
     function addLog(message, type = 'info') {
@@ -348,96 +295,57 @@
       logs.scrollTop = logs.scrollHeight;
     }
 
-    // --- SEARCH ENGINE SIMULATION ---
-    async function simulateSearch(query) {
+    function sortDeals(deals, mode) {
+      const d = [...deals];
+      if (mode === 'price') d.sort((a,b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+      if (mode === 'discount') d.sort((a,b) => (b.discount ?? -Infinity) - (a.discount ?? -Infinity));
+      return d;
+    }
+
+    async function liveSearch(query) {
       const terminal = $('systemTerminal');
       const logs = $('systemLogs');
       const searchIndicator = $('searchIndicator');
       const searchClear = $('searchClear');
 
-      // Start UI
       document.body.classList.add('is-scanning');
       terminal.classList.add('active');
       logs.innerHTML = '';
       searchIndicator.classList.remove('hidden');
       searchClear.classList.add('hidden');
 
-      addLog(`Avvio ricerca globale per: \"${query}\"...`, 'process');
-      await new Promise(r => setTimeout(r, 600));
+      addLog(`Avvio ricerca globale per: "${query}"...`, 'process');
+      addLog(`Interrogazione /api/search...`, 'info');
 
-      addLog(`Interrogazione Database Prodotti...`, 'info');
-      await new Promise(r => setTimeout(r, 500));
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
 
-      addLog(`Connessione crawler API esterne...`, 'warn');
-      await new Promise(r => setTimeout(r, 400));
-      addLog(`> Scansione Amazon.it... 200 OK`, 'info');
-      addLog(`> Scansione eBay.it... 200 OK`, 'info');
-      addLog(`> Scansione Unieuro.it... 200 OK`, 'info');
+        if (!res.ok) {
+          addLog(`Errore API (${res.status}): ${data?.error || 'unknown'}`, 'warn');
+          return { deals: [], sources: [] };
+        }
 
-      addLog(`Ordinamento per prezzo migliore...`, 'process');
-      await new Promise(r => setTimeout(r, 800));
+        addLog(`Ricevuti ${Array.isArray(data.deals) ? data.deals.length : 0} risultati.`, 'success');
 
-      const resultsCount = Math.floor(Math.random() * 5) + 3;
-      addLog(`Trovate ${resultsCount} offerte. Rendering risultati...`, 'success');
-      await new Promise(r => setTimeout(r, 500));
+        currentCategory = 'all';
+        renderCategories();
 
-      // End UI
-      terminal.classList.remove('active');
-      searchIndicator.classList.add('hidden');
-      searchClear.classList.remove('hidden');
-      document.body.classList.remove('is-scanning');
-
-      // Force coherent category UI
-      currentCategory = 'all';
-      renderCategories();
-
-      return generateMockResults(query, resultsCount);
-    }
-
-    function generateMockResults(query, count) {
-      let results = [];
-      const q = query.toLowerCase();
-
-      const staticResults = staticDeals.filter(deal =>
-        deal.title.toLowerCase().includes(q) ||
-        deal.store.toLowerCase().includes(q)
-      );
-      results = [...staticResults];
-
-      const stores = ['Amazon', 'eBay', 'Unieuro', 'MediaWorld', 'AliExpress'];
-      const images = [
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80',
-        'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80',
-      ];
-
-      const needed = Math.max(0, count - results.length);
-      for (let i = 0; i < needed; i++) {
-        const originalPrice = Math.floor(Math.random() * 400) + 50;
-        const discount = Math.floor(Math.random() * 40) + 10;
-        const price = originalPrice - (originalPrice * (discount / 100));
-        const randomStore = stores[Math.floor(Math.random() * stores.length)];
-        const randomImg = images[Math.floor(Math.random() * images.length)];
-        const titleQuery = q.charAt(0).toUpperCase() + q.slice(1);
-
-        results.push({
-          id: 100 + i,
-          title: `${titleQuery} [Miglior Prezzo]`,
-          price: price,
-          originalPrice: originalPrice,
-          discount: discount,
-          store: randomStore,
-          image: randomImg,
-          category: 'generated',
-          hot: Math.random() > 0.6,
-          time: 'Adesso',
-          url: '#'
-        });
+        return {
+          deals: Array.isArray(data.deals) ? data.deals : [],
+          sources: Array.isArray(data.sources) ? data.sources : []
+        };
+      } catch (e) {
+        addLog(`Errore di rete: ${e?.message || e}`, 'warn');
+        return { deals: [], sources: [] };
+      } finally {
+        terminal.classList.remove('active');
+        searchIndicator.classList.add('hidden');
+        searchClear.classList.remove('hidden');
+        document.body.classList.remove('is-scanning');
       }
-      return results;
     }
 
-    // --- RENDERING ---
     function renderCategories() {
       const desktopNav = $('desktopCategories');
       const mobileNav = $('mobileCategories');
@@ -451,26 +359,39 @@
           : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600';
 
         desktopNav.innerHTML += `
-          <button
-            onclick="filterCategory('${cat.id}')"
-            class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}"
-            aria-pressed="${isActive}"
-          >
+          <button onclick="filterCategory('${cat.id}')" class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}" aria-pressed="${isActive}">
             <div class="w-6 text-center"><i class="${cat.icon}"></i></div>
             <span class="text-sm">${cat.name}</span>
           </button>
         `;
 
         mobileNav.innerHTML += `
-          <button
-            onclick="filterCategory('${cat.id}')"
-            class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}"
-            aria-pressed="${isActive}"
-          >
+          <button onclick="filterCategory('${cat.id}')" class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}" aria-pressed="${isActive}">
             ${cat.name}
           </button>
         `;
       });
+    }
+
+    function renderSources(sources) {
+      const box = $('sourcesBox');
+      const list = $('sourcesList');
+      list.innerHTML = '';
+      if (!sources || !sources.length) {
+        box.classList.add('hidden');
+        return;
+      }
+      sources.slice(0, 10).forEach(s => {
+        const title = escapeHtml(s.title || 'Fonte');
+        const uri = escapeHtml(s.uri || '#');
+        list.innerHTML += `
+          <li class="flex items-start gap-2">
+            <i class="fas fa-external-link-alt text-indigo-600 mt-1"></i>
+            <a class="text-gray-800 hover:text-indigo-700 font-semibold underline underline-offset-2" href="${uri}" target="_blank" rel="noopener">${title}</a>
+          </li>
+        `;
+      });
+      box.classList.remove('hidden');
     }
 
     function renderDeals(dealsToRender) {
@@ -485,66 +406,60 @@
       }
       noResults.classList.add('hidden');
 
-      dealsToRender.forEach((deal, index) => {
-        const isCoupon = deal.category === 'coupons';
-        const delay = index * 100;
+      const sortMode = $('sortSelect')?.value || 'relevance';
+      const dealsSorted = sortDeals(dealsToRender, sortMode);
+
+      dealsSorted.forEach((deal, index) => {
+        const isCoupon = (deal.category === 'coupons') || (!!deal.code && (deal.price === 0 || deal.price === null));
+        const delay = index * 60;
+
+        const img = deal.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80';
+        const store = deal.store || 'Store';
+        const time = deal.time || 'Adesso';
+        const url = deal.url || '#';
 
         grid.innerHTML += `
-          <article class="deal-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
+          <article class="deal-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full animate-fade-in-up" style="animation-delay:${delay}ms">
             <div class="relative h-48 overflow-hidden bg-gray-100">
-              <img
-                src="${deal.image}"
-                alt="${escapeHtml(deal.title)}"
-                class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out"
-                loading="lazy"
-                decoding="async"
-              >
+              <img src="${escapeHtml(img)}" alt="${escapeHtml(deal.title || 'Offerta')}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out" loading="lazy" decoding="async">
               <div class="scan-overlay"></div>
               ${deal.hot ? '<span class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow animate-pulse">HOT</span>' : ''}
               <span class="absolute bottom-2 right-2 bg-white/90 backdrop-blur text-indigo-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm">
-                <i class="fas fa-store"></i> ${escapeHtml(deal.store)}
+                <i class="fas fa-store"></i> ${escapeHtml(store)}
               </span>
             </div>
 
             <div class="p-5 flex flex-col flex-1 relative">
               <div class="flex justify-between items-start mb-2">
                 <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                  <i class="fas fa-clock"></i> ${escapeHtml(deal.time || '')}
+                  <i class="fas fa-clock"></i> ${escapeHtml(time)}
                 </span>
               </div>
 
               <h3 class="font-bold text-gray-800 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                ${escapeHtml(deal.title)}
+                ${escapeHtml(deal.title || 'Offerta')}
               </h3>
 
               ${!isCoupon ? `
                 <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-end">
                   <div>
                     <div class="flex items-center gap-2">
-                      <span class="text-gray-400 line-through text-xs">€${Number(deal.originalPrice).toFixed(2)}</span>
-                      <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">-${Number(deal.discount)}%</span>
+                      ${(deal.originalPrice != null) ? `<span class="text-gray-400 line-through text-xs">€${Number(deal.originalPrice).toFixed(2)}</span>` : ''}
+                      ${(deal.discount != null) ? `<span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">-${Number(deal.discount)}%</span>` : ''}
                     </div>
-                    <div class="text-gray-900 font-black text-xl tracking-tight">€${Number(deal.price).toFixed(2)}</div>
+                    <div class="text-gray-900 font-black text-xl tracking-tight">
+                      ${(deal.price != null) ? `€${Number(deal.price).toFixed(2)}` : 'Prezzo N/D'}
+                    </div>
                   </div>
 
-                  <a
-                    href="${deal.url || '#'}"
-                    target="_blank"
-                    rel="noopener"
-                    class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-indigo-600 transition shadow-lg hover:shadow-indigo-200 transform active:scale-90"
-                    aria-label="Apri offerta"
-                  >
+                  <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-indigo-600 transition shadow-lg hover:shadow-indigo-200 transform active:scale-90" aria-label="Apri offerta">
                     <i class="fas fa-arrow-right"></i>
                   </a>
                 </div>
               ` : `
                 <div class="mt-auto pt-3">
-                  <button
-                    onclick="copyCoupon('${String(deal.code || '').replace(/'/g, \"\\\\'\")}', this)"
-                    class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2"
-                    aria-label="Copia coupon"
-                  >
-                    ${escapeHtml(deal.code || 'CODICE')} <i class="far fa-copy"></i>
+                  <button onclick="copyCoupon('${String(deal.code || '').replace(/'/g, "\\'")}', this)" class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2" aria-label="Copia coupon">
+                    ${escapeHtml(deal.code || 'COPIA CODICE')} <i class="far fa-copy"></i>
                   </button>
                 </div>
               `}
@@ -554,53 +469,43 @@
       });
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    // --- EVENT LISTENERS ---
     const searchInput = $('searchInput');
     const pageTitle = $('pageTitle');
 
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const term = (e.target.value || '').trim();
-        if (term.length > 0) {
-          simulateSearch(term).then(results => {
-            renderDeals(results);
+        if (term.length > 1) {
+          liveSearch(term).then(({deals, sources}) => {
+            lastResults = deals;
+            renderDeals(deals);
+            renderSources(sources);
             pageTitle.innerHTML = `Risultati per: <span class="text-indigo-600">"${escapeHtml(term)}"</span>`;
           });
         }
       }
     });
 
-    // Enable keyboard on clear icon
     $('searchClear').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') resetFilters();
     });
 
+    $('sortSelect')?.addEventListener('change', () => renderDeals(lastResults));
+
     window.resetFilters = function() {
       searchInput.value = '';
-
-      // Stop UI states
       $('systemTerminal').classList.remove('active');
       document.body.classList.remove('is-scanning');
 
-      // Reset search UI
       $('searchIndicator').classList.add('hidden');
       $('searchClear').classList.add('hidden');
 
-      // Reset category + render
       currentCategory = 'all';
+      lastResults = [...staticDeals];
       renderCategories();
       renderDeals(staticDeals);
+      renderSources([]);
 
-      // Reset title + empty state
       pageTitle.innerHTML = defaultTitleHTML();
       $('noResults').classList.add('hidden');
     }
@@ -612,14 +517,14 @@
         ? staticDeals
         : staticDeals.filter(deal => deal.category === catId);
 
+      lastResults = filtered;
       renderCategories();
       renderDeals(filtered);
+      renderSources([]);
 
       const cat = categories.find(c => c.id === catId);
       const catName = cat ? cat.name : 'Tutte';
-      pageTitle.innerHTML = catId === 'all'
-        ? defaultTitleHTML()
-        : escapeHtml(catName);
+      pageTitle.innerHTML = catId === 'all' ? defaultTitleHTML() : escapeHtml(catName);
     };
 
     window.copyCoupon = function(code, btn) {
@@ -628,10 +533,7 @@
         const originalClass = btn.className;
         btn.innerHTML = `<i class="fas fa-check"></i> COPIATO`;
         btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-sm transition shadow-lg";
-        setTimeout(() => {
-          btn.innerHTML = originalHtml;
-          btn.className = originalClass;
-        }, 2000);
+        setTimeout(() => { btn.innerHTML = originalHtml; btn.className = originalClass; }, 2000);
       };
 
       const fallbackCopy = () => {
@@ -654,7 +556,6 @@
       }
     }
 
-    // Init
     renderCategories();
     renderDeals(staticDeals);
   </script>
