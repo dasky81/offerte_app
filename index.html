@@ -1,535 +1,530 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Zap, 
-  Smartphone, 
-  CreditCard, 
-  Shield, 
-  Tv, 
-  Search, 
-  Filter, 
-  CheckCircle, 
-  ArrowRight, 
-  TrendingDown, 
-  Info,
-  Menu,
-  X,
-  Star
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <!-- SEO Meta Tags -->
+    <title>Offerte.app - Motore di Ricerca Sconti e Codici Promozionali</title>
+    <meta name="description" content="Cerca e confronta migliaia di offerte, errori di prezzo e codici sconto in tempo reale. Il motore di ricerca per il risparmio intelligente.">
+    <meta name="keywords" content="motore ricerca offerte, comparatore prezzi, codici sconto, black friday, sconti amazon, errori prezzo">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://offerte.app/">
 
-// --- TIPI E INTERFACCE ---
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://offerte.app/">
+    <meta property="og:title" content="Offerte.app - Cerca, Trova, Risparmia">
+    <meta property="og:description" content="Il motore di ricerca per scovare le migliori offerte del web in tempo reale.">
+    <meta property="og:image" content="https://placehold.co/1200x630/4f46e5/ffffff?text=Offerte.app+Web">
 
-type Category = 'energy' | 'telco' | 'finance' | 'insurance' | 'digital';
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-interface Offer {
-  id: string;
-  category: Category;
-  provider: string;
-  name: string;
-  price: number; // Prezzo base per ordinamento
-  priceLabel: string; // Es: "/mese", "/anno"
-  features: string[];
-  badges?: string[];
-  rating: number;
-  // Campi specifici per calcoli dinamici
-  pricePerUnit?: number; // Es: costo kWh
-  fixedCost?: number; // Costi fissi
-  data?: number; // GB per telco
-  speed?: number; // Mbps
-}
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-// --- MOCK DATA (SIMULAZIONE DATABASE) ---
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-const MOCK_DB: Offer[] = [
-  // LUCE & GAS
-  {
-    id: 'e1',
-    category: 'energy',
-    provider: 'EcoPower',
-    name: 'Luce Verde Fix',
-    price: 0.12, // Costo materia prima
-    priceLabel: '/kWh',
-    pricePerUnit: 0.12,
-    fixedCost: 10, // Costi fissi mensili
-    features: ['Prezzo Bloccato 12 mesi', '100% Green', 'Bolletta Web'],
-    badges: ['Consigliato', 'Green'],
-    rating: 4.8
-  },
-  {
-    id: 'e2',
-    category: 'energy',
-    provider: 'FlashEnergy',
-    name: 'Variabile Smart',
-    price: 0.10,
-    priceLabel: '/kWh (PUN)',
-    pricePerUnit: 0.10,
-    fixedCost: 8,
-    features: ['Prezzo indicizzato', 'Sconto domiciliazione', 'App dedicata'],
-    badges: ['Miglior Prezzo'],
-    rating: 4.2
-  },
-  {
-    id: 'e3',
-    category: 'energy',
-    provider: 'GasSicuro',
-    name: 'Gas Inverno',
-    price: 0.45,
-    priceLabel: '/Smc',
-    pricePerUnit: 0.45,
-    fixedCost: 12,
-    features: ['Caldaia in omaggio', 'Manutenzione inclusa'],
-    badges: ['Bundle'],
-    rating: 4.5
-  },
-
-  // TELEFONIA
-  {
-    id: 't1',
-    category: 'telco',
-    provider: 'FastWebs',
-    name: 'Mobile Rush',
-    price: 7.99,
-    priceLabel: '/mese',
-    data: 150,
-    speed: 1000,
-    features: ['150 GB 5G', 'Minuti Illimitati', 'Attivazione Gratis'],
-    badges: ['5G Incluso', 'Operator Attack'],
-    rating: 4.6
-  },
-  {
-    id: 't2',
-    category: 'telco',
-    provider: 'IliadLike',
-    name: 'Giga 200',
-    price: 9.99,
-    priceLabel: '/mese',
-    data: 200,
-    speed: 500,
-    features: ['200 GB', 'Per sempre', 'Zero vincoli'],
-    badges: ['Popolare'],
-    rating: 4.9
-  },
-
-  // CONTI & CARTE
-  {
-    id: 'f1',
-    category: 'finance',
-    provider: 'NeoBank',
-    name: 'Conto Smart',
-    price: 0,
-    priceLabel: '/anno',
-    features: ['Carta Debito Virtuale', 'Bonifici Gratis', 'Salvadanai'],
-    badges: ['Zero Spese', 'Under 30'],
-    rating: 4.7
-  },
-  {
-    id: 'f2',
-    category: 'finance',
-    provider: 'PrimeBank',
-    name: 'Carta Oro',
-    price: 60,
-    priceLabel: '/anno',
-    features: ['Assicurazione Viaggi', 'Lounge Aeroporti', 'Concierge'],
-    badges: ['Premium'],
-    rating: 4.9
-  },
-
-  // ASSICURAZIONI
-  {
-    id: 'i1',
-    category: 'insurance',
-    provider: 'SafeDrive',
-    name: 'RC Auto Base',
-    price: 240,
-    priceLabel: '/anno',
-    features: ['Guida Esperta', 'Soccorso Stradale', 'Tutela Legale'],
-    badges: ['Sconto Web'],
-    rating: 4.3
-  },
-  {
-    id: 'i2',
-    category: 'insurance',
-    provider: 'TravelGuard',
-    name: 'Viaggio USA',
-    price: 45,
-    priceLabel: ' una tantum',
-    features: ['Spese mediche illimitate', 'Bagaglio smarrito', 'Annullamento'],
-    badges: ['Essenziale'],
-    rating: 4.8
-  },
-
-  // ABBONAMENTI DIGITALI
-  {
-    id: 'd1',
-    category: 'digital',
-    provider: 'StreamFlix',
-    name: 'Piano Standard + VPN',
-    price: 12.99,
-    priceLabel: '/mese',
-    features: ['4K HDR', 'VPN Inclusa', '3 Dispositivi'],
-    badges: ['Bundle Esclusivo'],
-    rating: 4.5
-  },
-  {
-    id: 'd2',
-    category: 'digital',
-    provider: 'NordSecure',
-    name: 'VPN 2 Anni',
-    price: 3.49,
-    priceLabel: '/mese',
-    features: ['6000+ Server', 'No Log', 'Threat Protection'],
-    badges: ['Sconto 68%', 'Lifetime Deal'],
-    rating: 4.9
-  }
-];
-
-// --- COMPONENTI UI ---
-
-const Badge = ({ text, colorClass }: { text: string; colorClass: string }) => (
-  <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${colorClass}`}>
-    {text}
-  </span>
-);
-
-const OfferCard = ({ offer, category, estimatedCost }: { offer: Offer; category: Category; estimatedCost?: number }) => {
-  let categoryColor = '';
-  switch (category) {
-    case 'energy': categoryColor = 'bg-yellow-100 text-yellow-800 border-yellow-200'; break;
-    case 'telco': categoryColor = 'bg-blue-100 text-blue-800 border-blue-200'; break;
-    case 'finance': categoryColor = 'bg-green-100 text-green-800 border-green-200'; break;
-    case 'insurance': categoryColor = 'bg-red-100 text-red-800 border-red-200'; break;
-    case 'digital': categoryColor = 'bg-purple-100 text-purple-800 border-purple-200'; break;
-  }
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 overflow-hidden group">
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-             <div className="flex flex-wrap gap-2 mb-2">
-                {offer.badges?.map((badge, idx) => (
-                  <Badge key={idx} text={badge} colorClass={categoryColor} />
-                ))}
-             </div>
-            <h3 className="text-lg font-bold text-slate-800">{offer.provider}</h3>
-            <p className="text-slate-500 text-sm">{offer.name}</p>
-          </div>
-          <div className="text-right">
-            {estimatedCost ? (
-               <div className="flex flex-col items-end">
-                 <span className="text-xs text-slate-400">Stima Mensile</span>
-                 <span className="text-2xl font-bold text-slate-900">€{estimatedCost.toFixed(2)}</span>
-               </div>
-            ) : (
-              <div className="flex flex-col items-end">
-                <span className="text-2xl font-bold text-slate-900">€{offer.price}</span>
-                <span className="text-xs text-slate-400">{offer.priceLabel}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-2 mb-6">
-          {offer.features.map((feat, idx) => (
-            <div key={idx} className="flex items-center text-sm text-slate-600">
-              <CheckCircle className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-              {feat}
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-           <div className="flex items-center text-yellow-500 text-sm font-semibold">
-              <Star className="w-4 h-4 fill-current mr-1" />
-              {offer.rating}
-           </div>
-           <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors flex items-center">
-             Vedi Dettagli <ArrowRight className="w-4 h-4 ml-2" />
-           </button>
-        </div>
-      </div>
-      {/* Footer "segreto" della card con info extra */}
-      <div className="bg-slate-50 px-6 py-2 text-xs text-slate-400 flex justify-between items-center group-hover:bg-slate-100 transition-colors">
-         <span>Verificato oggi</span>
-         <span className="flex items-center cursor-help" title="Mostra info sulla trasparenza">
-           <Info className="w-3 h-3 mr-1" /> Termini e Condizioni
-         </span>
-      </div>
-    </div>
-  );
-};
-
-// --- APP PRINCIPALE ---
-
-const OfferteApp = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>('energy');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Stati per i filtri (semplificati per la demo)
-  const [energyConsumption, setEnergyConsumption] = useState(2700); // kWh annui
-  const [telcoData, setTelcoData] = useState(50); // GB minimi
-  const [sortOrder, setSortOrder] = useState<'price_asc' | 'rating_desc'>('price_asc');
-
-  // Logica di filtraggio e calcolo
-  const filteredOffers = useMemo(() => {
-    let offers = MOCK_DB.filter(o => o.category === activeCategory);
-
-    // Filtri specifici
-    if (activeCategory === 'telco') {
-      offers = offers.filter(o => (o.data || 0) >= telcoData);
+    <!-- Schema.org SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://offerte.app/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://offerte.app/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
     }
+    </script>
 
-    // Ordinamento
-    offers.sort((a, b) => {
-      // Per l'energia calcoliamo il prezzo stimato per ordinare correttamente
-      const priceA = activeCategory === 'energy' ? ((a.pricePerUnit || 0) * energyConsumption / 12) + (a.fixedCost || 0) : a.price;
-      const priceB = activeCategory === 'energy' ? ((b.pricePerUnit || 0) * energyConsumption / 12) + (b.fixedCost || 0) : b.price;
-
-      if (sortOrder === 'price_asc') return priceA - priceB;
-      if (sortOrder === 'rating_desc') return b.rating - a.rating;
-      return 0;
-    });
-
-    return offers;
-  }, [activeCategory, energyConsumption, telcoData, sortOrder]);
-
-  const calculateEstimatedCost = (offer: Offer) => {
-    if (activeCategory === 'energy' && offer.pricePerUnit && offer.fixedCost) {
-      // Formula semplificata: (Costo kWh * Consumo Annuo / 12) + Costi Fissi
-      return ((offer.pricePerUnit * energyConsumption) / 12) + offer.fixedCost;
-    }
-    return undefined;
-  };
-
-  // Configurazione Categorie
-  const categories = [
-    { id: 'energy', label: 'Luce & Gas', icon: Zap, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { id: 'telco', label: 'Telefonia', icon: Smartphone, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { id: 'finance', label: 'Conti & Carte', icon: CreditCard, color: 'text-green-600', bg: 'bg-green-50' },
-    { id: 'insurance', label: 'Assicurazioni', icon: Shield, color: 'text-red-600', bg: 'bg-red-50' },
-    { id: 'digital', label: 'Abbonamenti', icon: Tv, color: 'text-purple-600', bg: 'bg-purple-50' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
-      
-      {/* HEADER */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <div className="bg-slate-900 text-white p-1.5 rounded-lg">
-                <TrendingDown className="w-5 h-5" />
-              </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">offerte<span className="text-slate-400">.app</span></span>
-            </div>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
-              <a href="#" className="hover:text-slate-900">Come funziona</a>
-              <a href="#" className="hover:text-slate-900">Chi siamo</a>
-              <a href="#" className="text-slate-900">Le mie Utenze</a>
-            </nav>
-
-            <button 
-              className="md:hidden p-2 text-slate-600"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        {/* Mobile Nav */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-slate-100 p-4 space-y-4 shadow-lg">
-             <a href="#" className="block text-slate-600 font-medium">Come funziona</a>
-             <a href="#" className="block text-slate-600 font-medium">Le mie Utenze</a>
-          </div>
-        )}
-      </header>
-
-      {/* CATEGORY NAV (SCROLLABLE) */}
-      <div className="bg-white border-b border-slate-200 overflow-x-auto">
-        <div className="max-w-6xl mx-auto px-4 flex space-x-8 min-w-max py-4">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id as Category)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
-                  isActive 
-                    ? `${cat.bg} ${cat.color} ring-1 ring-inset ring-current shadow-sm` 
-                    : 'text-slate-500 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'fill-current' : ''}`} />
-                <span className="font-semibold text-sm">{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* MAIN CONTENT */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        /* Hide scrollbar for horizontal scrolling */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* SEARCH WIDGET / WIZARD (LEFT COLUMN) */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
-              <div className="mb-6">
-                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <Filter className="w-5 h-5" />
-                  Configura Ricerca
-                </h2>
-                <p className="text-sm text-slate-500 mt-1">Personalizza i risultati per le tue esigenze.</p>
-              </div>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
 
-              {/* DYNAMIC FILTERS BASED ON CATEGORY */}
-              <div className="space-y-6">
-                
-                {activeCategory === 'energy' && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Consumo Annuo (kWh)
-                    </label>
-                    <input 
-                      type="range" 
-                      min="1000" 
-                      max="6000" 
-                      step="100"
-                      value={energyConsumption}
-                      onChange={(e) => setEnergyConsumption(parseInt(e.target.value))}
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-2 font-mono">
-                      <span>1000 kWh</span>
-                      <span className="font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded">{energyConsumption} kWh</span>
-                      <span>6000 kWh</span>
-                    </div>
-                  </div>
-                )}
+        /* Smooth fade for filtering */
+        .deal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .deal-card.hidden-card { display: none; }
+        
+        /* PWA styles */
+        .bottom-nav-padding { padding-bottom: 80px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
 
-                {activeCategory === 'telco' && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Dati Minimi (GB)
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[50, 100, 200].map(val => (
-                        <button 
-                          key={val}
-                          onClick={() => setTelcoData(val)}
-                          className={`py-2 px-3 text-sm rounded-lg border ${
-                            telcoData === val 
-                              ? 'bg-blue-600 text-white border-blue-600' 
-                              : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
-                          }`}
-                        >
-                          {val}+ GB
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {activeCategory === 'insurance' && (
-                  <div>
-                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Tipologia
-                    </label>
-                    <select className="w-full border-slate-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500 text-sm py-2">
-                      <option>RC Auto</option>
-                      <option>Moto</option>
-                      <option>Autocarro</option>
-                    </select>
-                  </div>
-                )}
-
-                {/* Common Sort Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Ordina per
-                  </label>
-                  <select 
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as any)}
-                    className="w-full border-slate-300 rounded-lg shadow-sm text-sm py-2"
-                  >
-                    <option value="price_asc">Prezzo più basso</option>
-                    <option value="rating_desc">Miglior Punteggio</option>
-                  </select>
+    <!-- Top App Bar (Sticky) -->
+    <header class="fixed w-full z-40 bg-white shadow-sm border-b border-gray-100 top-0">
+        <div class="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <a href="#" class="flex-shrink-0 flex items-center" onclick="resetFilters()">
+                <div class="bg-indigo-600 text-white p-1.5 rounded-lg mr-2">
+                    <i class="fas fa-tag"></i>
                 </div>
+                <span class="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Offerte.app</span>
+            </a>
 
-                <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-colors flex justify-center items-center gap-2">
-                  <Search className="w-4 h-4" />
-                  Aggiorna Risultati
+            <!-- Search Bar (Central & Dominant) -->
+            <div class="flex-1 max-w-2xl relative">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Cerca offerte (es. iPhone, Nike, TV...)" 
+                           class="w-full bg-gray-100 text-gray-900 border-none rounded-full py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm sm:text-base">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Actions (Desktop) -->
+            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                <button class="text-gray-500 hover:text-indigo-600 transition relative p-2">
+                    <i class="far fa-bell text-xl"></i>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
                 </button>
-              </div>
-            </div>
-
-            {/* PROMO BOX */}
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-              <h3 className="font-bold text-lg mb-2">My Wallet 💼</h3>
-              <p className="text-indigo-100 text-sm mb-4">Carica le tue bollette. Ti avvisiamo noi quando puoi risparmiare!</p>
-              <button className="bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold w-full hover:bg-indigo-50 transition-colors">
-                Attiva Monitoraggio
-              </button>
-            </div>
-          </div>
-
-          {/* RESULTS FEED (RIGHT COLUMN) */}
-          <div className="lg:col-span-8">
-            <div className="flex justify-between items-end mb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">
-                  Migliori offerte per <span className="capitalize">{categories.find(c => c.id === activeCategory)?.label}</span>
-                </h1>
-                <p className="text-slate-500 mt-1">
-                  {filteredOffers.length} risultati trovati basati sul tuo profilo
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {filteredOffers.length > 0 ? (
-                filteredOffers.map((offer) => (
-                  <OfferCard 
-                    key={offer.id} 
-                    offer={offer} 
-                    category={activeCategory}
-                    estimatedCost={calculateEstimatedCost(offer)}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
-                  <p className="text-slate-500">Nessuna offerta corrisponde ai filtri selezionati.</p>
-                  <button 
-                    onClick={() => { setEnergyConsumption(2700); setTelcoData(50); }}
-                    className="mt-2 text-blue-600 font-medium hover:underline"
-                  >
-                    Resetta filtri
-                  </button>
+                <button class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition hidden sm:block">
+                    Accedi
+                </button>
+                <div class="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 overflow-hidden sm:hidden">
+                    <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
                 </div>
-              )}
             </div>
-
-            <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex gap-3 text-sm text-yellow-800">
-               <Info className="w-5 h-5 flex-shrink-0" />
-               <p>
-                 I prezzi indicati per Luce & Gas sono stime basate sul consumo annuo inserito e includono imposte e oneri di sistema attuali. 
-                 Verifica sempre le condizioni finali sul sito del fornitore.
-               </p>
-            </div>
-          </div>
-
         </div>
-      </main>
-    </div>
-  );
-};
+        
+        <!-- Mobile Categories (Horizontal Scroll) -->
+        <div class="lg:hidden border-t border-gray-100 bg-white">
+            <div class="flex overflow-x-auto gap-2 px-4 py-2 scrollbar-hide" id="mobileCategories">
+                <!-- Categories injected by JS -->
+            </div>
+        </div>
+    </header>
 
-export default OfferteApp;
+    <!-- Main Layout -->
+    <div class="flex flex-1 pt-[110px] lg:pt-[80px] bottom-nav-padding container mx-auto px-4 lg:px-8 gap-8">
+        
+        <!-- Sidebar Filters (Desktop Only) -->
+        <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-80px)] overflow-y-auto pb-10 pr-4">
+            <div class="space-y-8">
+                <!-- Categories -->
+                <div>
+                    <h3 class="font-bold text-gray-900 mb-4 px-2">Categorie</h3>
+                    <nav class="space-y-1" id="desktopCategories">
+                        <!-- Injected by JS -->
+                    </nav>
+                </div>
+
+                <!-- Stores -->
+                <div>
+                    <h3 class="font-bold text-gray-900 mb-4 px-2">Negozi</h3>
+                    <div class="space-y-2 px-2">
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-600">
+                            <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="text-sm text-gray-600">Amazon</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-600">
+                            <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="text-sm text-gray-600">eBay</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-600">
+                            <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="text-sm text-gray-600">Unieuro</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Price Range -->
+                <div>
+                    <h3 class="font-bold text-gray-900 mb-4 px-2">Prezzo</h3>
+                    <div class="px-2">
+                        <input type="range" min="0" max="1000" class="w-full accent-indigo-600 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 mt-2">
+                            <span>€0</span>
+                            <span>€1000+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Promo Banner Sidebar -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-4 text-white text-center">
+                    <p class="font-bold text-lg mb-1">Telegram Premium</p>
+                    <p class="text-xs text-indigo-100 mb-3">Ricevi le notifiche 5 minuti prima degli altri.</p>
+                    <button class="w-full bg-white text-indigo-600 text-xs font-bold py-2 rounded-lg shadow-sm">Unisciti al Canale</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 lg:ml-72 min-w-0">
+            
+            <!-- Quick Stats / Breadcrumb -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl lg:text-2xl font-bold text-gray-900" id="pageTitle">Tutte le Offerte</h1>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    <span class="hidden sm:inline">Ordina per:</span>
+                    <select class="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2">
+                        <option>Più recenti</option>
+                        <option>Prezzo più basso</option>
+                        <option>Sconto maggiore</option>
+                        <option>Più calde 🔥</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Active Filters (Dynamic) -->
+            <div class="flex flex-wrap gap-2 mb-6 hidden" id="activeFilters">
+                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                    Elettronica <i class="fas fa-times cursor-pointer hover:text-indigo-900" onclick="resetFilters()"></i>
+                </span>
+            </div>
+
+            <!-- Offers Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="dealsGrid">
+                <!-- Deals will be populated by JS to simulate dynamic app feel -->
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="noResults" class="hidden text-center py-20">
+                <div class="inline-block p-4 bg-gray-100 rounded-full mb-4 text-gray-400">
+                    <i class="fas fa-search text-4xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">Nessuna offerta trovata</h3>
+                <p class="text-gray-500">Prova a cercare qualcos'altro o cambia categoria.</p>
+                <button onclick="resetFilters()" class="mt-4 text-indigo-600 font-semibold hover:underline">Resetta filtri</button>
+            </div>
+            
+            <!-- Load More -->
+            <div class="mt-12 text-center pb-8">
+                <button class="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition shadow-sm w-full sm:w-auto">
+                    Carica altre offerte
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation (App Like) -->
+    <div class="lg:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 pb-safe">
+        <div class="flex justify-around items-center h-16">
+            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-indigo-600" onclick="resetFilters()">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-indigo-600">
+                <i class="fas fa-fire text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Top</span>
+            </a>
+            <div class="relative -top-5">
+                <button class="w-14 h-14 bg-indigo-600 rounded-full text-white shadow-lg flex items-center justify-center text-xl hover:bg-indigo-700 transition transform active:scale-95" onclick="document.getElementById('searchInput').focus()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-indigo-600">
+                <i class="far fa-heart text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Salvati</span>
+            </a>
+            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-indigo-600">
+                <i class="far fa-user text-lg mb-1"></i>
+                <span class="text-[10px] font-medium">Profilo</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Fake Data Database
+        const categories = [
+            { id: 'all', name: 'Tutte', icon: 'fas fa-th-large' },
+            { id: 'tech', name: 'Elettronica', icon: 'fas fa-mobile-alt' },
+            { id: 'home', name: 'Casa', icon: 'fas fa-couch' },
+            { id: 'fashion', name: 'Moda', icon: 'fas fa-tshirt' },
+            { id: 'gaming', name: 'Gaming', icon: 'fas fa-gamepad' },
+            { id: 'beauty', name: 'Salute', icon: 'fas fa-heartbeat' },
+            { id: 'coupons', name: 'Coupon', icon: 'fas fa-ticket-alt' }
+        ];
+
+        const deals = [
+            {
+                id: 1,
+                title: 'Apple AirPods Pro (2ª gen)',
+                price: 239.00,
+                originalPrice: 299.00,
+                discount: 20,
+                store: 'Amazon',
+                image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80',
+                category: 'tech',
+                hot: true,
+                time: '2 min fa'
+            },
+            {
+                id: 2,
+                title: 'PlayStation 5 Slim - Standard',
+                price: 449.99,
+                originalPrice: 549.99,
+                discount: 18,
+                store: 'MediaWorld',
+                image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80',
+                category: 'gaming',
+                hot: true,
+                time: '15 min fa'
+            },
+            {
+                id: 3,
+                title: 'Dyson V15 Detect Absolute',
+                price: 599.00,
+                originalPrice: 799.00,
+                discount: 25,
+                store: 'Dyson',
+                image: 'https://images.unsplash.com/photo-1558317374-a3594743e9c7?auto=format&fit=crop&w=500&q=80',
+                category: 'home',
+                hot: false,
+                time: '1 ora fa'
+            },
+            {
+                id: 4,
+                title: 'Codice Sconto Nike 25%',
+                price: 0,
+                originalPrice: 0,
+                discount: 25,
+                store: 'Nike',
+                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
+                category: 'coupons',
+                code: 'JUSTDOIT25',
+                hot: true,
+                time: '3 ore fa'
+            },
+            {
+                id: 5,
+                title: 'Samsung Galaxy S24 Ultra',
+                price: 1199.00,
+                originalPrice: 1499.00,
+                discount: 20,
+                store: 'Samsung',
+                image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=500&q=80',
+                category: 'tech',
+                hot: false,
+                time: '4 ore fa'
+            },
+            {
+                id: 6,
+                title: 'Levi\'s 501 Original Fit Jeans',
+                price: 65.50,
+                originalPrice: 110.00,
+                discount: 40,
+                store: 'Zalando',
+                image: 'https://images.unsplash.com/photo-1542272617-08f083157f5d?auto=format&fit=crop&w=500&q=80',
+                category: 'fashion',
+                hot: false,
+                time: '5 ore fa'
+            },
+             {
+                id: 7,
+                title: 'MacBook Air M2 13"',
+                price: 999.00,
+                originalPrice: 1349.00,
+                discount: 26,
+                store: 'Amazon',
+                image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80',
+                category: 'tech',
+                hot: true,
+                time: '6 ore fa'
+            },
+             {
+                id: 8,
+                title: 'Philips Hue Starter Kit',
+                price: 89.99,
+                originalPrice: 149.99,
+                discount: 40,
+                store: 'Amazon',
+                image: 'https://images.unsplash.com/photo-1558002038-1091a1661116?auto=format&fit=crop&w=500&q=80',
+                category: 'home',
+                hot: false,
+                time: '7 ore fa'
+            },
+            {
+                id: 9,
+                title: 'Crema Viso Idratante CeraVe',
+                price: 9.99,
+                originalPrice: 16.50,
+                discount: 39,
+                store: 'Notino',
+                image: 'https://images.unsplash.com/photo-1556228578-8d84487c6742?auto=format&fit=crop&w=500&q=80',
+                category: 'beauty',
+                hot: false,
+                time: '8 ore fa'
+            }
+        ];
+
+        let currentCategory = 'all';
+
+        // Render Categories
+        function renderCategories() {
+            const desktopNav = document.getElementById('desktopCategories');
+            const mobileNav = document.getElementById('mobileCategories');
+            
+            desktopNav.innerHTML = '';
+            mobileNav.innerHTML = '';
+
+            categories.forEach(cat => {
+                const isActive = cat.id === currentCategory;
+                const activeClass = isActive ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600 hover:bg-gray-50';
+                
+                // Desktop
+                desktopNav.innerHTML += `
+                    <button onclick="filterCategory('${cat.id}')" class="w-full text-left flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${activeClass}">
+                        <i class="${cat.icon} w-5 text-center ${isActive ? 'text-indigo-600' : 'text-gray-400'}"></i>
+                        <span>${cat.name}</span>
+                    </button>
+                `;
+
+                // Mobile
+                mobileNav.innerHTML += `
+                    <button onclick="filterCategory('${cat.id}')" class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border whitespace-nowrap transition-colors ${isActive ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-gray-50 text-gray-700 border-gray-200'}">
+                        ${cat.name}
+                    </button>
+                `;
+            });
+        }
+
+        // Render Deals
+        function renderDeals(dealsToRender) {
+            const grid = document.getElementById('dealsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            grid.innerHTML = '';
+            
+            if (dealsToRender.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                dealsToRender.forEach(deal => {
+                    const isCoupon = deal.category === 'coupons';
+                    const priceDisplay = isCoupon 
+                        ? `<span class="text-indigo-600 font-bold">CODICE</span>` 
+                        : `<span class="text-red-600 font-bold text-xl">€${deal.price.toFixed(2)}</span>`;
+                    
+                    const originalPriceDisplay = (!isCoupon && deal.originalPrice > 0) 
+                        ? `<span class="text-gray-400 line-through text-xs">€${deal.originalPrice.toFixed(2)}</span>` 
+                        : '';
+
+                    const badge = deal.hot 
+                        ? `<span class="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1"><i class="fas fa-fire"></i> HOT</span>` 
+                        : `<span class="absolute top-2 right-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">-${deal.discount}%</span>`;
+
+                    const actionButton = isCoupon 
+                        ? `<button onclick="copyCoupon('${deal.code}', this)" class="w-full mt-3 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 py-2 rounded-lg font-bold text-sm transition border border-indigo-200 border-dashed">
+                            ${deal.code} <i class="far fa-copy ml-1"></i>
+                           </button>`
+                        : `<button class="w-full mt-3 bg-gray-900 text-white hover:bg-gray-800 py-2 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 group-hover:bg-indigo-600">
+                            Vedi Offerta <i class="fas fa-external-link-alt text-xs"></i>
+                           </button>`;
+
+                    grid.innerHTML += `
+                        <article class="deal-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-indigo-100 group flex flex-col h-full">
+                            <div class="relative h-48 overflow-hidden bg-gray-100">
+                                <img src="${deal.image}" alt="${deal.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                ${badge}
+                                <span class="absolute bottom-2 left-2 bg-white/90 backdrop-blur text-black text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
+                                    <i class="fas fa-store text-gray-400"></i> ${deal.store}
+                                </span>
+                            </div>
+                            <div class="p-4 flex flex-col flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-[10px] text-gray-500 uppercase tracking-wide font-semibold">${deal.time}</span>
+                                </div>
+                                <h3 class="font-bold text-gray-900 mb-2 leading-snug line-clamp-2" title="${deal.title}">${deal.title}</h3>
+                                <div class="mt-auto pt-2 border-t border-gray-50">
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            ${originalPriceDisplay}
+                                            <div class="flex items-center gap-2">
+                                                ${priceDisplay}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${actionButton}
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                });
+            }
+        }
+
+        // Search Logic
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = deals.filter(deal => 
+                deal.title.toLowerCase().includes(term) || 
+                deal.store.toLowerCase().includes(term)
+            );
+            renderDeals(filtered);
+            
+            // Update Title
+            const pageTitle = document.getElementById('pageTitle');
+            if(term.length > 0) {
+                pageTitle.innerText = `Risultati per "${term}"`;
+            } else {
+                pageTitle.innerText = currentCategory === 'all' ? 'Tutte le Offerte' : categories.find(c => c.id === currentCategory).name;
+            }
+        });
+
+        // Filter Logic
+        window.filterCategory = function(catId) {
+            currentCategory = catId;
+            document.getElementById('searchInput').value = ''; // Reset search
+            
+            const filtered = catId === 'all' 
+                ? deals 
+                : deals.filter(deal => deal.category === catId);
+            
+            renderCategories();
+            renderDeals(filtered);
+            
+            // Update Title
+            const catName = categories.find(c => c.id === catId).name;
+            document.getElementById('pageTitle').innerText = catId === 'all' ? 'Tutte le Offerte' : catName;
+            
+            // Mobile: Scroll active category into view
+            if(window.innerWidth < 1024) {
+                 // Simple auto scroll logic could go here
+            }
+        };
+
+        window.resetFilters = function() {
+            filterCategory('all');
+        }
+
+        window.copyCoupon = function(code, btn) {
+            navigator.clipboard.writeText(code).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = 'Copiato!';
+                btn.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.remove('bg-green-50', 'text-green-700', 'border-green-200');
+                    btn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+                }, 2000);
+            });
+        }
+
+        // Init
+        renderCategories();
+        renderDeals(deals);
+
+    </script>
+</body>
+</html>
