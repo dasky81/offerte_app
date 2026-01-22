@@ -1,562 +1,662 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="theme-color" content="#4f46e5">
-    
-    <!-- SEO Meta Tags -->
-    <title>Offerte.app - Il Motore di Ricerca del Risparmio</title>
-    <meta name="description" content="Confronta prezzi in tempo reale su Amazon, eBay e centinaia di negozi online. Trova sempre il miglior prezzo con Offerte.app.">
-    <meta name="robots" content="index, follow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#4f46e5">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SEO Meta Tags -->
+  <title>Offerte.app - Il Motore di Ricerca del Risparmio</title>
+  <meta name="description" content="Confronta prezzi in tempo reale su Amazon, eBay e centinaia di negozi online. Trova sempre il miglior prezzo con Offerte.app.">
+  <meta name="robots" content="index, follow">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Hide scrollbar */
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-        /* --- ANIMAZIONI --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+  <style>
+    body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        .deal-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .deal-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        
-        /* Terminal Styles */
-        .system-terminal {
-            transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .system-terminal.active {
-            max-height: 200px;
-            opacity: 1;
-        }
-        
-        /* Scanning effect overlay on images */
-        .scan-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(79, 70, 229, 0.1), transparent);
-            transform: translateY(-100%);
-            animation: scan-vertical 2s linear infinite;
-            pointer-events: none;
-            display: none; /* Hidden by default, shown on search */
-        }
-        .group:hover .scan-overlay {
-            display: block;
-        }
+    /* Hide scrollbar */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        @keyframes scan-vertical {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        
-        .bottom-nav-padding { padding-bottom: 80px; }
-    </style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* --- ANIMAZIONI --- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .deal-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .deal-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+
+    /* Terminal Styles */
+    .system-terminal {
+      transition: max-height 0.4s ease-in-out, opacity 0.3s ease;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .system-terminal.active {
+      max-height: 200px;
+      opacity: 1;
+    }
+
+    /* Scanning effect overlay on images */
+    .scan-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(79, 70, 229, 0.12), transparent);
+      transform: translateY(-100%);
+      animation: scan-vertical 2s linear infinite;
+      pointer-events: none;
+      display: none; /* default off */
+    }
+    .group:hover .scan-overlay { display: block; }
+
+    @keyframes scan-vertical {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* IMPORTANT: show scanning also on mobile / during search */
+    body.is-scanning .scan-overlay { display: block; }
+
+    .bottom-nav-padding { padding-bottom: 80px; }
+  </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen selection:bg-indigo-100 selection:text-indigo-800">
 
-    <!-- Top App Bar (Sticky) -->
-    <header class="fixed w-full z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 top-0 transition-all duration-300">
-        <div class="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between gap-4">
-            <!-- Logo -->
-            <a href="#" class="flex-shrink-0 flex items-center group" onclick="resetFilters()">
-                <div class="bg-gradient-to-br from-indigo-600 to-blue-600 text-white p-2 rounded-xl mr-2 shadow-lg group-hover:rotate-6 transition-transform duration-300">
-                    <i class="fas fa-search-dollar text-lg"></i>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-xl font-black text-gray-900 tracking-tight leading-none">Offerte<span class="text-indigo-600">.app</span></span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden sm:block">Motore di Ricerca</span>
-                </div>
-            </a>
-
-            <!-- Search Bar (Central & Dominant) -->
-            <div class="flex-1 max-w-2xl relative group">
-                <div class="relative transition-transform duration-300 focus-within:scale-[1.01]">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Cerca il miglior prezzo (es. iPhone 15, PS5...)" 
-                           class="w-full bg-gray-100/80 hover:bg-white text-gray-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl py-2.5 pl-11 pr-10 focus:ring-4 focus:ring-indigo-100 focus:bg-white transition-all shadow-inner text-sm sm:text-base font-medium placeholder-gray-400">
-                    
-                    <!-- Search Indicator -->
-                    <div id="searchIndicator" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-                        <i class="fas fa-circle-notch fa-spin text-indigo-500"></i>
-                    </div>
-                     <div id="searchClear" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden cursor-pointer text-gray-400 hover:text-red-500 transition-colors transform hover:rotate-90 duration-200" onclick="resetFilters()">
-                        <i class="fas fa-times-circle text-lg"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- User Actions -->
-            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-                <a href="#" class="hidden sm:flex items-center gap-2 bg-white text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm border border-gray-200 hover:border-indigo-300">
-                    <i class="fas fa-download"></i>
-                    <span>Scarica App</span>
-                </a>
-            </div>
+  <!-- Top App Bar (Sticky) -->
+  <header class="fixed w-full z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 top-0 transition-all duration-300">
+    <div class="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Logo -->
+      <a href="#" class="flex-shrink-0 flex items-center group" onclick="resetFilters(); return false;">
+        <div class="bg-gradient-to-br from-indigo-600 to-blue-600 text-white p-2 rounded-xl mr-2 shadow-lg group-hover:rotate-6 transition-transform duration-300">
+          <i class="fas fa-search-dollar text-lg"></i>
         </div>
-
-        <!-- SEARCH PROCESSING TERMINAL (Hidden by default) -->
-        <div id="systemTerminal" class="system-terminal bg-gray-900 text-green-400 font-mono text-xs sm:text-sm border-t border-b border-gray-800 shadow-inner">
-            <div class="container mx-auto px-4 py-3">
-                <div class="flex items-center gap-2 mb-2 text-gray-500 border-b border-gray-800 pb-1">
-                    <i class="fas fa-server"></i> PRICE_SCANNER_V4.exe
-                    <span class="ml-auto text-[10px] bg-indigo-900 text-indigo-200 px-2 rounded">NETWORK ACTIVE</span>
-                </div>
-                <div id="systemLogs" class="space-y-1 h-24 overflow-y-auto">
-                    <!-- Logs will appear here -->
-                </div>
-            </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-black text-gray-900 tracking-tight leading-none">Offerte<span class="text-indigo-600">.app</span></span>
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden sm:block">Motore di Ricerca</span>
         </div>
-        
-        <!-- Mobile Categories -->
-        <div class="lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur">
-            <div class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide" id="mobileCategories">
-                <!-- Categories injected by JS -->
-            </div>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="flex-1 max-w-2xl relative group">
+        <div class="relative transition-transform duration-300 focus-within:scale-[1.01]">
+          <label for="searchInput" class="sr-only">Cerca offerte</label>
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <i class="fas fa-search text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
+          </div>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Cerca il miglior prezzo (es. iPhone 15, PS5...)"
+            class="w-full bg-gray-100/80 hover:bg-white text-gray-900 border-2 border-transparent focus:border-indigo-500 rounded-2xl py-2.5 pl-11 pr-10 focus:ring-4 focus:ring-indigo-100 focus:bg-white transition-all shadow-inner text-sm sm:text-base font-medium placeholder-gray-400"
+            autocomplete="off"
+          >
+
+          <!-- Search Indicator -->
+          <div id="searchIndicator" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
+            <i class="fas fa-circle-notch fa-spin text-indigo-500"></i>
+          </div>
+          <div
+            id="searchClear"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center hidden cursor-pointer text-gray-400 hover:text-red-500 transition-colors transform hover:rotate-90 duration-200"
+            onclick="resetFilters()"
+            role="button"
+            aria-label="Pulisci ricerca"
+            tabindex="0"
+          >
+            <i class="fas fa-times-circle text-lg"></i>
+          </div>
         </div>
-    </header>
+      </div>
 
-    <!-- Main Layout -->
-    <div class="flex flex-1 pt-[120px] lg:pt-[90px] bottom-nav-padding container mx-auto px-4 lg:px-8 gap-8">
-        
-        <!-- Sidebar Filters (Desktop Only) -->
-        <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-90px)] overflow-y-auto pb-10 pr-4 scrollbar-hide">
-            <div class="space-y-8">
-                <!-- Categories -->
-                <div>
-                    <h3 class="font-bold text-gray-900 mb-4 px-2 flex items-center gap-2">
-                        <i class="fas fa-layer-group text-indigo-500"></i> Categorie
-                    </h3>
-                    <nav class="space-y-1" id="desktopCategories">
-                        <!-- Injected by JS -->
-                    </nav>
-                </div>
-
-                <!-- System Status Box -->
-                <div class="bg-white rounded-2xl p-5 text-gray-800 shadow-lg border border-gray-100 relative overflow-hidden group">
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-xs font-bold text-gray-500 uppercase">Stato Crawler</span>
-                    </div>
-                    <p class="font-bold text-lg mb-1">Online</p>
-                    <p class="text-xs text-gray-500 mb-4">Monitoraggio attivo su 50+ store italiani ed esteri.</p>
-                    
-                    <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
-                        <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 100%"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] text-gray-400 font-mono">
-                        <span>AMZ: OK</span>
-                        <span>EBY: OK</span>
-                        <span>UNI: OK</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 lg:ml-72 min-w-0 pb-12">
-            
-            <!-- Quick Stats / Breadcrumb -->
-            <div class="flex items-end justify-between mb-8">
-                <div>
-                    <h1 class="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2" id="pageTitle">
-                        Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>
-                    </h1>
-                    <p class="text-gray-500 text-sm mt-1">Confrontiamo migliaia di prezzi in tempo reale per farti risparmiare.</p>
-                </div>
-                <div class="hidden sm:flex items-center gap-2 text-sm">
-                     <span class="text-gray-400 text-xs">Ordina per:</span>
-                     <select class="bg-white border-none text-gray-900 font-bold focus:ring-0 cursor-pointer">
-                         <option>Rilevanza</option>
-                         <option>Prezzo più basso</option>
-                         <option>Sconto maggiore %</option>
-                     </select>
-                </div>
-            </div>
-
-            <!-- Offers Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="dealsGrid">
-                <!-- Deals populated by JS -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="noResults" class="hidden text-center py-20 animate-fade-in-up">
-                <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6 relative">
-                    <i class="fas fa-search text-4xl text-gray-300"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Nessun risultato trovato</h3>
-                <p class="text-gray-500 max-w-md mx-auto mb-6">Non abbiamo trovato offerte per questa ricerca nei negozi monitorati.</p>
-                <button onclick="resetFilters()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition">Torna alla Home</button>
-            </div>
-        </main>
+      <!-- User Actions -->
+      <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+        <a href="#" class="hidden sm:flex items-center gap-2 bg-white text-gray-700 hover:text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm transition shadow-sm border border-gray-200 hover:border-indigo-300">
+          <i class="fas fa-download"></i>
+          <span>Scarica App</span>
+        </a>
+      </div>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <div class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-lg border-t border-gray-200 z-50 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
-        <div class="flex justify-around items-center h-16 px-2">
-            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-indigo-600" onclick="resetFilters()">
-                <i class="fas fa-home text-xl mb-0.5"></i>
-                <span class="text-[10px] font-bold">Home</span>
-            </a>
-            <div class="relative -top-6">
-                <button class="w-14 h-14 bg-indigo-600 rounded-2xl text-white shadow-xl flex items-center justify-center text-xl hover:shadow-indigo-500/40 transition transform active:scale-95 group border border-indigo-500" onclick="document.getElementById('searchInput').focus()">
-                    <i class="fas fa-search group-hover:scale-110 transition-transform"></i>
-                </button>
-            </div>
-            <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-indigo-500">
-                <i class="far fa-heart text-xl mb-0.5"></i>
-                <span class="text-[10px] font-medium">Salvati</span>
-            </a>
+    <!-- SEARCH PROCESSING TERMINAL -->
+    <div id="systemTerminal" class="system-terminal bg-gray-900 text-green-400 font-mono text-xs sm:text-sm border-t border-b border-gray-800 shadow-inner">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center gap-2 mb-2 text-gray-500 border-b border-gray-800 pb-1">
+          <i class="fas fa-server"></i> PRICE_SCANNER_V4.exe
+          <span class="ml-auto text-[10px] bg-indigo-900 text-indigo-200 px-2 rounded">NETWORK ACTIVE</span>
         </div>
+        <div id="systemLogs" class="space-y-1 h-24 overflow-y-auto" aria-live="polite">
+          <!-- Logs -->
+        </div>
+      </div>
     </div>
 
-    <!-- JavaScript Data & Logic -->
-    <script>
-        // --- DATA LAYER ---
-        const categories = [
-            { id: 'all', name: 'Tutte', icon: 'fas fa-th-large' },
-            { id: 'tech', name: 'Tech', icon: 'fas fa-mobile-alt' },
-            { id: 'home', name: 'Casa', icon: 'fas fa-couch' },
-            { id: 'fashion', name: 'Moda', icon: 'fas fa-tshirt' },
-            { id: 'gaming', name: 'Gaming', icon: 'fas fa-gamepad' },
-            { id: 'coupons', name: 'Coupon', icon: 'fas fa-ticket-alt' }
-        ];
+    <!-- Mobile Categories -->
+    <div class="lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur">
+      <div class="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide" id="mobileCategories">
+        <!-- Injected -->
+      </div>
+    </div>
+  </header>
 
-        // "Featured" Deals
-        const staticDeals = [
-            {
-                id: 1,
-                title: 'Apple AirPods Pro (2ª gen) USB-C',
-                price: 239.00,
-                originalPrice: 279.00,
-                discount: 15,
-                store: 'Amazon',
-                image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80',
-                category: 'tech',
-                hot: true,
-                time: '2 min fa'
-            },
-            {
-                id: 2,
-                title: 'PlayStation 5 Slim Standard',
-                price: 449.99,
-                originalPrice: 549.99,
-                discount: 18,
-                store: 'MediaWorld',
-                image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80',
-                category: 'gaming',
-                hot: true,
-                time: '15 min fa'
-            },
-            {
-                id: 4,
-                title: 'Codice Sconto Nike Ufficiale',
-                price: 0,
-                originalPrice: 0,
-                discount: 25,
-                store: 'Nike',
-                image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
-                category: 'coupons',
-                code: 'NIKE25',
-                hot: true,
-                time: '3 ore fa'
-            },
-             {
-                id: 7,
-                title: 'MacBook Air M2 13" Galassia',
-                price: 999.00,
-                originalPrice: 1349.00,
-                discount: 26,
-                store: 'Amazon',
-                image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80',
-                category: 'tech',
-                hot: true,
-                time: '6 ore fa'
-            }
-        ];
+  <!-- Main Layout -->
+  <div class="flex flex-1 pt-[120px] lg:pt-[90px] bottom-nav-padding container mx-auto px-4 lg:px-8 gap-8">
 
-        let currentCategory = 'all';
-        let searchTimeout = null;
+    <!-- Sidebar Filters (Desktop Only) -->
+    <aside class="hidden lg:block w-64 flex-shrink-0 fixed h-[calc(100vh-90px)] overflow-y-auto pb-10 pr-4 scrollbar-hide">
+      <div class="space-y-8">
+        <!-- Categories -->
+        <div>
+          <h3 class="font-bold text-gray-900 mb-4 px-2 flex items-center gap-2">
+            <i class="fas fa-layer-group text-indigo-500"></i> Categorie
+          </h3>
+          <nav class="space-y-1" id="desktopCategories">
+            <!-- Injected -->
+          </nav>
+        </div>
 
-        // --- SEARCH ENGINE SIMULATION ---
-        
-        function addLog(message, type = 'info') {
-            const logs = document.getElementById('systemLogs');
-            const line = document.createElement('div');
-            const timestamp = new Date().toLocaleTimeString('it-IT', { hour12: false });
-            
-            let colorClass = 'text-gray-300';
-            if (type === 'success') colorClass = 'text-green-400';
-            if (type === 'warn') colorClass = 'text-yellow-400';
-            if (type === 'process') colorClass = 'text-blue-400';
+        <!-- System Status Box -->
+        <div class="bg-white rounded-2xl p-5 text-gray-800 shadow-lg border border-gray-100 relative overflow-hidden group">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-xs font-bold text-gray-500 uppercase">Stato Crawler</span>
+          </div>
+          <p class="font-bold text-lg mb-1">Online</p>
+          <p class="text-xs text-gray-500 mb-4">Monitoraggio attivo su 50+ store italiani ed esteri.</p>
 
-            line.className = `font-mono text-xs ${colorClass}`;
-            line.innerHTML = `<span class="opacity-50">[${timestamp}]</span> ${message}`;
-            
-            logs.appendChild(line);
-            logs.scrollTop = logs.scrollHeight;
-        }
+          <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+            <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 100%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-gray-400 font-mono">
+            <span>AMZ: OK</span>
+            <span>EBY: OK</span>
+            <span>UNI: OK</span>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-        async function simulateSearch(query) {
-            const terminal = document.getElementById('systemTerminal');
-            const logs = document.getElementById('systemLogs');
-            const searchIndicator = document.getElementById('searchIndicator');
-            const searchClear = document.getElementById('searchClear');
-            
-            // Start UI
-            terminal.classList.add('active');
-            logs.innerHTML = ''; // Clear logs
-            searchIndicator.classList.remove('hidden');
-            searchClear.classList.add('hidden');
-            
-            // Step 1: Start
-            addLog(`Avvio ricerca globale per: "${query}"...`, 'process');
-            await new Promise(r => setTimeout(r, 600));
-            
-            // Step 2: Database
-            addLog(`Interrogazione Database Prodotti...`, 'info');
-            await new Promise(r => setTimeout(r, 500));
-            
-            // Step 3: Scraping Simulation
-            addLog(`Connessione crawler API esterne...`, 'warn');
-            await new Promise(r => setTimeout(r, 400));
-            addLog(`> Scansione Amazon.it... 200 OK`, 'info');
-            addLog(`> Scansione eBay.it... 200 OK`, 'info');
-            addLog(`> Scansione Unieuro.it... 200 OK`, 'info');
-            
-            // Step 4: Sorting
-            addLog(`Ordinamento per prezzo migliore...`, 'process');
-            await new Promise(r => setTimeout(r, 800));
-            
-            // Step 5: Finalizing
-            const resultsCount = Math.floor(Math.random() * 5) + 3; // Random count
-            addLog(`Trovate ${resultsCount} offerte. Rendering risultati...`, 'success');
-            await new Promise(r => setTimeout(r, 500));
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:ml-72 min-w-0 pb-12">
 
-            // Generate Results
-            terminal.classList.remove('active');
-            searchIndicator.classList.add('hidden');
-            searchClear.classList.remove('hidden');
-            
-            return generateMockResults(query, resultsCount);
-        }
+      <!-- Quick Stats / Breadcrumb -->
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <h1 class="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2" id="pageTitle">
+            Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+          </h1>
+          <p class="text-gray-500 text-sm mt-1">Confrontiamo migliaia di prezzi in tempo reale per farti risparmiare.</p>
+        </div>
+        <div class="hidden sm:flex items-center gap-2 text-sm">
+          <span class="text-gray-400 text-xs">Ordina per:</span>
+          <select class="bg-white border-none text-gray-900 font-bold focus:ring-0 cursor-pointer" aria-label="Ordina risultati">
+            <option>Rilevanza</option>
+            <option>Prezzo più basso</option>
+            <option>Sconto maggiore %</option>
+          </select>
+        </div>
+      </div>
 
-        function generateMockResults(query, count) {
-            let results = [];
-            const q = query.toLowerCase();
-            
-            // Include matching static deals
-            const staticResults = staticDeals.filter(deal => 
-                deal.title.toLowerCase().includes(q) || 
-                deal.store.toLowerCase().includes(q)
-            );
-            results = [...staticResults];
+      <!-- Offers Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="dealsGrid">
+        <!-- Deals -->
+      </div>
 
-            // Generate dynamic "scraped" deals
-            const stores = ['Amazon', 'eBay', 'Unieuro', 'MediaWorld', 'AliExpress'];
-            const images = [
-                'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80',
-                'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80',
-                'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80',
-            ];
+      <!-- Empty State -->
+      <div id="noResults" class="hidden text-center py-20 animate-fade-in-up">
+        <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6 relative">
+          <i class="fas fa-search text-4xl text-gray-300"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Nessun risultato trovato</h3>
+        <p class="text-gray-500 max-w-md mx-auto mb-6">Non abbiamo trovato offerte per questa ricerca nei negozi monitorati.</p>
+        <button onclick="resetFilters()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition">Torna alla Home</button>
+      </div>
+    </main>
+  </div>
 
-            const needed = count - results.length;
-            for(let i=0; i<needed; i++) {
-                const originalPrice = Math.floor(Math.random() * 400) + 50;
-                const discount = Math.floor(Math.random() * 40) + 10;
-                const price = originalPrice - (originalPrice * (discount/100));
-                const randomStore = stores[Math.floor(Math.random() * stores.length)];
-                const randomImg = images[Math.floor(Math.random() * images.length)];
-                const titleQuery = q.charAt(0).toUpperCase() + q.slice(1);
-                
-                results.push({
-                    id: 100 + i,
-                    title: `${titleQuery} [Miglior Prezzo]`,
-                    price: price,
-                    originalPrice: originalPrice,
-                    discount: discount,
-                    store: randomStore,
-                    image: randomImg,
-                    category: 'generated',
-                    hot: Math.random() > 0.6,
-                    time: 'Adesso'
-                });
-            }
-            return results;
-        }
+  <!-- Mobile Bottom Navigation -->
+  <div class="lg:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur-lg border-t border-gray-200 z-50 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+    <div class="flex justify-around items-center h-16 px-2">
+      <a href="#" class="flex flex-col items-center justify-center w-full h-full text-indigo-600" onclick="resetFilters(); return false;">
+        <i class="fas fa-home text-xl mb-0.5"></i>
+        <span class="text-[10px] font-bold">Home</span>
+      </a>
+      <div class="relative -top-6">
+        <button class="w-14 h-14 bg-indigo-600 rounded-2xl text-white shadow-xl flex items-center justify-center text-xl hover:shadow-indigo-500/40 transition transform active:scale-95 group border border-indigo-500" onclick="document.getElementById('searchInput').focus()">
+          <i class="fas fa-search group-hover:scale-110 transition-transform"></i>
+        </button>
+      </div>
+      <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-indigo-500">
+        <i class="far fa-heart text-xl mb-0.5"></i>
+        <span class="text-[10px] font-medium">Salvati</span>
+      </a>
+    </div>
+  </div>
 
-        // --- RENDERING ---
+  <!-- JavaScript Data & Logic -->
+  <script>
+    // --- DATA LAYER ---
+    const categories = [
+      { id: 'all', name: 'Tutte', icon: 'fas fa-th-large' },
+      { id: 'tech', name: 'Tech', icon: 'fas fa-mobile-alt' },
+      { id: 'home', name: 'Casa', icon: 'fas fa-couch' },
+      { id: 'fashion', name: 'Moda', icon: 'fas fa-tshirt' },
+      { id: 'gaming', name: 'Gaming', icon: 'fas fa-gamepad' },
+      { id: 'coupons', name: 'Coupon', icon: 'fas fa-ticket-alt' }
+    ];
 
-        function renderCategories() {
-            const desktopNav = document.getElementById('desktopCategories');
-            const mobileNav = document.getElementById('mobileCategories');
-            desktopNav.innerHTML = '';
-            mobileNav.innerHTML = '';
+    // Featured Deals (static mock)
+    const staticDeals = [
+      {
+        id: 1,
+        title: 'Apple AirPods Pro (2ª gen) USB-C',
+        price: 239.00,
+        originalPrice: 279.00,
+        discount: 15,
+        store: 'Amazon',
+        image: 'https://images.unsplash.com/photo-1603351154351-5cf99703f6a8?auto=format&fit=crop&w=500&q=80',
+        category: 'tech',
+        hot: true,
+        time: '2 min fa',
+        url: '#'
+      },
+      {
+        id: 2,
+        title: 'PlayStation 5 Slim Standard',
+        price: 449.99,
+        originalPrice: 549.99,
+        discount: 18,
+        store: 'MediaWorld',
+        image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80',
+        category: 'gaming',
+        hot: true,
+        time: '15 min fa',
+        url: '#'
+      },
+      {
+        id: 4,
+        title: 'Codice Sconto Nike Ufficiale',
+        price: 0,
+        originalPrice: 0,
+        discount: 25,
+        store: 'Nike',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
+        category: 'coupons',
+        code: 'NIKE25',
+        hot: true,
+        time: '3 ore fa',
+        url: '#'
+      },
+      {
+        id: 7,
+        title: 'MacBook Air M2 13\" Galassia',
+        price: 999.00,
+        originalPrice: 1349.00,
+        discount: 26,
+        store: 'Amazon',
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80',
+        category: 'tech',
+        hot: true,
+        time: '6 ore fa',
+        url: '#'
+      }
+    ];
 
-            categories.forEach((cat) => {
-                const isActive = cat.id === currentCategory;
-                const activeClass = isActive 
-                    ? 'bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600';
-                
-                desktopNav.innerHTML += `
-                    <button onclick="filterCategory('${cat.id}')" class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}">
-                        <div class="w-6 text-center"><i class="${cat.icon}"></i></div>
-                        <span class="text-sm">${cat.name}</span>
-                    </button>
-                `;
+    let currentCategory = 'all';
 
-                mobileNav.innerHTML += `
-                    <button onclick="filterCategory('${cat.id}')" class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}">
-                        ${cat.name}
-                    </button>
-                `;
-            });
-        }
+    // --- HELPERS ---
+    const $ = (id) => document.getElementById(id);
 
-        function renderDeals(dealsToRender) {
-            const grid = document.getElementById('dealsGrid');
-            const noResults = document.getElementById('noResults');
-            
-            grid.innerHTML = '';
-            
-            if (dealsToRender.length === 0) {
-                noResults.classList.remove('hidden');
-            } else {
-                noResults.classList.add('hidden');
-                
-                dealsToRender.forEach((deal, index) => {
-                    const isCoupon = deal.category === 'coupons';
-                    const delay = index * 100;
+    function defaultTitleHTML() {
+      return 'Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>';
+    }
 
-                    grid.innerHTML += `
-                        <article class="deal-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
-                            <div class="relative h-48 overflow-hidden bg-gray-100">
-                                <img src="${deal.image}" alt="${deal.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out">
-                                <div class="scan-overlay"></div>
-                                ${deal.hot ? '<span class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow animate-pulse">HOT</span>' : ''}
-                                <span class="absolute bottom-2 right-2 bg-white/90 backdrop-blur text-indigo-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm">
-                                    <i class="fas fa-store"></i> ${deal.store}
-                                </span>
-                            </div>
-                            <div class="p-5 flex flex-col flex-1 relative">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                                        <i class="fas fa-clock"></i> ${deal.time}
-                                    </span>
-                                </div>
-                                <h3 class="font-bold text-gray-800 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">${deal.title}</h3>
-                                
-                                ${!isCoupon ? `
-                                <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-end">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-gray-400 line-through text-xs">€${deal.originalPrice.toFixed(2)}</span>
-                                            <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">-${deal.discount}%</span>
-                                        </div>
-                                        <div class="text-gray-900 font-black text-xl tracking-tight">€${deal.price.toFixed(2)}</div>
-                                    </div>
-                                    <button class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-indigo-600 transition shadow-lg hover:shadow-indigo-200 transform active:scale-90">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>` : `
-                                <div class="mt-auto pt-3">
-                                    <button onclick="copyCoupon('${deal.code}', this)" class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2">
-                                        ${deal.code} <i class="far fa-copy"></i>
-                                    </button>
-                                </div>
-                                `}
-                            </div>
-                        </article>
-                    `;
-                });
-            }
-        }
+    function addLog(message, type = 'info') {
+      const logs = $('systemLogs');
+      const line = document.createElement('div');
+      const timestamp = new Date().toLocaleTimeString('it-IT', { hour12: false });
 
-        // --- EVENT LISTENERS ---
+      let colorClass = 'text-gray-300';
+      if (type === 'success') colorClass = 'text-green-400';
+      if (type === 'warn') colorClass = 'text-yellow-400';
+      if (type === 'process') colorClass = 'text-blue-400';
 
-        const searchInput = document.getElementById('searchInput');
-        const pageTitle = document.getElementById('pageTitle');
+      line.className = `font-mono text-xs ${colorClass}`;
+      line.innerHTML = `<span class="opacity-50">[${timestamp}]</span> ${message}`;
 
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const term = e.target.value;
-                if (term.length > 0) {
-                    if (searchTimeout) clearTimeout(searchTimeout);
-                    simulateSearch(term).then(results => {
-                        renderDeals(results);
-                        pageTitle.innerHTML = `Risultati per: <span class="text-indigo-600">"${term}"</span>`;
-                    });
-                }
-            }
+      logs.appendChild(line);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    // --- SEARCH ENGINE SIMULATION ---
+    async function simulateSearch(query) {
+      const terminal = $('systemTerminal');
+      const logs = $('systemLogs');
+      const searchIndicator = $('searchIndicator');
+      const searchClear = $('searchClear');
+
+      // Start UI
+      document.body.classList.add('is-scanning');
+      terminal.classList.add('active');
+      logs.innerHTML = '';
+      searchIndicator.classList.remove('hidden');
+      searchClear.classList.add('hidden');
+
+      addLog(`Avvio ricerca globale per: \"${query}\"...`, 'process');
+      await new Promise(r => setTimeout(r, 600));
+
+      addLog(`Interrogazione Database Prodotti...`, 'info');
+      await new Promise(r => setTimeout(r, 500));
+
+      addLog(`Connessione crawler API esterne...`, 'warn');
+      await new Promise(r => setTimeout(r, 400));
+      addLog(`> Scansione Amazon.it... 200 OK`, 'info');
+      addLog(`> Scansione eBay.it... 200 OK`, 'info');
+      addLog(`> Scansione Unieuro.it... 200 OK`, 'info');
+
+      addLog(`Ordinamento per prezzo migliore...`, 'process');
+      await new Promise(r => setTimeout(r, 800));
+
+      const resultsCount = Math.floor(Math.random() * 5) + 3;
+      addLog(`Trovate ${resultsCount} offerte. Rendering risultati...`, 'success');
+      await new Promise(r => setTimeout(r, 500));
+
+      // End UI
+      terminal.classList.remove('active');
+      searchIndicator.classList.add('hidden');
+      searchClear.classList.remove('hidden');
+      document.body.classList.remove('is-scanning');
+
+      // Force coherent category UI
+      currentCategory = 'all';
+      renderCategories();
+
+      return generateMockResults(query, resultsCount);
+    }
+
+    function generateMockResults(query, count) {
+      let results = [];
+      const q = query.toLowerCase();
+
+      const staticResults = staticDeals.filter(deal =>
+        deal.title.toLowerCase().includes(q) ||
+        deal.store.toLowerCase().includes(q)
+      );
+      results = [...staticResults];
+
+      const stores = ['Amazon', 'eBay', 'Unieuro', 'MediaWorld', 'AliExpress'];
+      const images = [
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80',
+        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80',
+        'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80',
+      ];
+
+      const needed = Math.max(0, count - results.length);
+      for (let i = 0; i < needed; i++) {
+        const originalPrice = Math.floor(Math.random() * 400) + 50;
+        const discount = Math.floor(Math.random() * 40) + 10;
+        const price = originalPrice - (originalPrice * (discount / 100));
+        const randomStore = stores[Math.floor(Math.random() * stores.length)];
+        const randomImg = images[Math.floor(Math.random() * images.length)];
+        const titleQuery = q.charAt(0).toUpperCase() + q.slice(1);
+
+        results.push({
+          id: 100 + i,
+          title: `${titleQuery} [Miglior Prezzo]`,
+          price: price,
+          originalPrice: originalPrice,
+          discount: discount,
+          store: randomStore,
+          image: randomImg,
+          category: 'generated',
+          hot: Math.random() > 0.6,
+          time: 'Adesso',
+          url: '#'
         });
+      }
+      return results;
+    }
 
-        window.resetFilters = function() {
-            searchInput.value = '';
-            document.getElementById('systemTerminal').classList.remove('active');
-            filterCategory('all');
+    // --- RENDERING ---
+    function renderCategories() {
+      const desktopNav = $('desktopCategories');
+      const mobileNav = $('mobileCategories');
+      desktopNav.innerHTML = '';
+      mobileNav.innerHTML = '';
+
+      categories.forEach((cat) => {
+        const isActive = cat.id === currentCategory;
+        const activeClass = isActive
+          ? 'bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600'
+          : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600';
+
+        desktopNav.innerHTML += `
+          <button
+            onclick="filterCategory('${cat.id}')"
+            class="w-full text-left flex items-center gap-3 px-4 py-3 transition-all duration-200 ${activeClass}"
+            aria-pressed="${isActive}"
+          >
+            <div class="w-6 text-center"><i class="${cat.icon}"></i></div>
+            <span class="text-sm">${cat.name}</span>
+          </button>
+        `;
+
+        mobileNav.innerHTML += `
+          <button
+            onclick="filterCategory('${cat.id}')"
+            class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95 ${isActive ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200'}"
+            aria-pressed="${isActive}"
+          >
+            ${cat.name}
+          </button>
+        `;
+      });
+    }
+
+    function renderDeals(dealsToRender) {
+      const grid = $('dealsGrid');
+      const noResults = $('noResults');
+
+      grid.innerHTML = '';
+
+      if (!dealsToRender || dealsToRender.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      }
+      noResults.classList.add('hidden');
+
+      dealsToRender.forEach((deal, index) => {
+        const isCoupon = deal.category === 'coupons';
+        const delay = index * 100;
+
+        grid.innerHTML += `
+          <article class="deal-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
+              <img
+                src="${deal.image}"
+                alt="${escapeHtml(deal.title)}"
+                class="w-full h-full object-cover group-hover:scale-110 transition duration-700 ease-in-out"
+                loading="lazy"
+                decoding="async"
+              >
+              <div class="scan-overlay"></div>
+              ${deal.hot ? '<span class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow animate-pulse">HOT</span>' : ''}
+              <span class="absolute bottom-2 right-2 bg-white/90 backdrop-blur text-indigo-900 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm">
+                <i class="fas fa-store"></i> ${escapeHtml(deal.store)}
+              </span>
+            </div>
+
+            <div class="p-5 flex flex-col flex-1 relative">
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                  <i class="fas fa-clock"></i> ${escapeHtml(deal.time || '')}
+                </span>
+              </div>
+
+              <h3 class="font-bold text-gray-800 mb-2 leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                ${escapeHtml(deal.title)}
+              </h3>
+
+              ${!isCoupon ? `
+                <div class="mt-auto pt-3 border-t border-gray-50 flex justify-between items-end">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-gray-400 line-through text-xs">€${Number(deal.originalPrice).toFixed(2)}</span>
+                      <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">-${Number(deal.discount)}%</span>
+                    </div>
+                    <div class="text-gray-900 font-black text-xl tracking-tight">€${Number(deal.price).toFixed(2)}</div>
+                  </div>
+
+                  <a
+                    href="${deal.url || '#'}"
+                    target="_blank"
+                    rel="noopener"
+                    class="bg-gray-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-indigo-600 transition shadow-lg hover:shadow-indigo-200 transform active:scale-90"
+                    aria-label="Apri offerta"
+                  >
+                    <i class="fas fa-arrow-right"></i>
+                  </a>
+                </div>
+              ` : `
+                <div class="mt-auto pt-3">
+                  <button
+                    onclick="copyCoupon('${String(deal.code || '').replace(/'/g, \"\\\\'\")}', this)"
+                    class="w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2"
+                    aria-label="Copia coupon"
+                  >
+                    ${escapeHtml(deal.code || 'CODICE')} <i class="far fa-copy"></i>
+                  </button>
+                </div>
+              `}
+            </div>
+          </article>
+        `;
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    // --- EVENT LISTENERS ---
+    const searchInput = $('searchInput');
+    const pageTitle = $('pageTitle');
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const term = (e.target.value || '').trim();
+        if (term.length > 0) {
+          simulateSearch(term).then(results => {
+            renderDeals(results);
+            pageTitle.innerHTML = `Risultati per: <span class="text-indigo-600">"${escapeHtml(term)}"</span>`;
+          });
         }
+      }
+    });
 
-        window.filterCategory = function(catId) {
-            currentCategory = catId;
-            const filtered = catId === 'all' 
-                ? staticDeals 
-                : staticDeals.filter(deal => deal.category === catId);
-            renderCategories();
-            renderDeals(filtered);
-            const catName = categories.find(c => c.id === catId).name;
-            pageTitle.innerHTML = catId === 'all' ? `Feed Offerte <span class="hidden sm:inline-block w-2 h-2 bg-red-500 rounded-full"></span>` : catName;
-        };
+    // Enable keyboard on clear icon
+    $('searchClear').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') resetFilters();
+    });
 
-        window.copyCoupon = function(code, btn) {
-            navigator.clipboard.writeText(code).then(() => {
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = `<i class="fas fa-check"></i> COPIATO`;
-                btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-sm transition shadow-lg";
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
-                    btn.className = "w-full bg-indigo-50 border border-indigo-200 border-dashed text-indigo-700 font-mono py-2 rounded-lg text-sm hover:bg-indigo-100 transition flex justify-center items-center gap-2";
-                }, 2000);
-            });
-        }
+    window.resetFilters = function() {
+      searchInput.value = '';
 
-        // Init
-        renderCategories();
-        renderDeals(staticDeals);
+      // Stop UI states
+      $('systemTerminal').classList.remove('active');
+      document.body.classList.remove('is-scanning');
 
-    </script>
+      // Reset search UI
+      $('searchIndicator').classList.add('hidden');
+      $('searchClear').classList.add('hidden');
+
+      // Reset category + render
+      currentCategory = 'all';
+      renderCategories();
+      renderDeals(staticDeals);
+
+      // Reset title + empty state
+      pageTitle.innerHTML = defaultTitleHTML();
+      $('noResults').classList.add('hidden');
+    }
+
+    window.filterCategory = function(catId) {
+      currentCategory = catId;
+
+      const filtered = catId === 'all'
+        ? staticDeals
+        : staticDeals.filter(deal => deal.category === catId);
+
+      renderCategories();
+      renderDeals(filtered);
+
+      const cat = categories.find(c => c.id === catId);
+      const catName = cat ? cat.name : 'Tutte';
+      pageTitle.innerHTML = catId === 'all'
+        ? defaultTitleHTML()
+        : escapeHtml(catName);
+    };
+
+    window.copyCoupon = function(code, btn) {
+      const successUI = () => {
+        const originalHtml = btn.innerHTML;
+        const originalClass = btn.className;
+        btn.innerHTML = `<i class="fas fa-check"></i> COPIATO`;
+        btn.className = "w-full bg-green-500 text-white font-bold py-2 rounded-lg text-sm transition shadow-lg";
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.className = originalClass;
+        }, 2000);
+      };
+
+      const fallbackCopy = () => {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); successUI(); }
+        catch (e) { console.warn('Copy failed', e); }
+        finally { document.body.removeChild(ta); }
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(successUI).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    }
+
+    // Init
+    renderCategories();
+    renderDeals(staticDeals);
+  </script>
 </body>
 </html>
